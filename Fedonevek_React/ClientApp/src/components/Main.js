@@ -7,6 +7,33 @@ import './New.css';
 export class Main extends Component {
     static displayName = Main.name;
 
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            users: [],
+            rooms: []
+        };
+    }
+
+    componentDidMount() {
+        this.getTopList();
+        this.getRooms();
+    }
+
+    getTopList() {
+        console.log("list got");
+        fetch('https://localhost:5001/api/users')
+            .then(response => response.json())
+            .then(response => this.setState({ users: response }))
+    }
+
+    getRooms() {
+        fetch('https://localhost:5001/api/rooms')
+            .then(response => response.json())
+            .then(response => this.setState({ rooms: response }))
+    }
+
     render() {
         return (
             <div class="container">
@@ -18,32 +45,12 @@ export class Main extends Component {
                                 <h4>Ranglista</h4>
                             </div>
                             <div class="card-body">
-                                <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
-                                    Zalan 100p
-                                </div>
-                                <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
-                                    Zalan 100p
-                                </div>
-                                <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
-                                    Zalan 100p
-                                </div>
-                                <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
-                                    Zalan 100p
-                                </div>
-                                <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
-                                    Zalan 100p
-                                </div>
-                                <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
-                                    Zalan 100p
-                                </div>
-                                <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
-                                    Zalan 100p
-                                </div>
-                                <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
-                                    Zalan 100p
-                                </div>
+                                {this.state.users.map(function (item, index) {
+                                    return <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
+                                                {item.nickName} <br/>{item.point} p
+                                           </div>
+                                })}
                             </div>
-   
                         </div>
                     </div>
 
@@ -53,15 +60,11 @@ export class Main extends Component {
                                 <h4>Szobak</h4>
                             </div>
                             <div class="card-body">
-                                <div class="bg-success mt-2 d-flex justify-content-center text-white p-2">
-                                    Szoba 24134
-                                </div>
-                                <div class="bg-success mt-2 d-flex justify-content-center text-white p-2">
-                                    Szoba 3434
-                                </div>
-                                <div class="bg-success mt-2 d-flex justify-content-center text-white p-2">
-                                    Szoba 3434
-                                </div>
+                                {this.state.rooms.map(function (item, index) {
+                                    return <div class="bg-success mt-2 d-flex justify-content-center text-white p-2">
+                                                {item.name}
+                                           </div>
+                                })}
                             </div>
                         </div>
                     </div>
@@ -73,13 +76,16 @@ export class Main extends Component {
                             </div>
                             <div class="card-body">
                                 <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
-                                    Dani
+                                    T
                                 </div>
                                 <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
-                                    Gergo
+                                    O
                                 </div>
                                 <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
-                                    Vili
+                                    D
+                                </div>
+                                <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
+                                    O
                                 </div>
                             </div>
                         </div>

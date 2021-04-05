@@ -53,5 +53,20 @@ namespace Fedonevek_React.Controllers
             var modified = repository.NewWord(value);
             return Ok(modified);
         }
+
+        [HttpPost("{id}/reveal")]
+        public ActionResult<Room> Reveal(int id)
+        {
+            var modified = repository.RevealOne(id);
+            return Ok(modified);
+        }
+
+        [HttpPost("{id}/change")]
+        public ActionResult<Room> Change(int id)
+        {
+            var modified = repository.ChangeTurn(id);
+            return Ok(modified);
+        }
+
     }
 }

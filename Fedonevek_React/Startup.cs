@@ -35,6 +35,7 @@ namespace Fedonevek_React
                     Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<Data.IRoomsRepository, Data.RoomsRepository>();
+            services.AddScoped<Data.IUsersRepository, Data.UsersRepository>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 

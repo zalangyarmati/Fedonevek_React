@@ -13,5 +13,7 @@ namespace Fedonevek_React.Data
         Room FindById(int roomid);
         Room Create(CreateRoom value);
         Room NewWord(NewWord value);
+        Room RevealOne(int id);
+        Room ChangeTurn(int id);
     }
 }

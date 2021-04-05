@@ -17,7 +17,7 @@ namespace Fedonevek_React.Data
 
         public IReadOnlyCollection<Card> List(int id)
         {
-            
+            throw new NotImplementedException();
         }
     }
 }

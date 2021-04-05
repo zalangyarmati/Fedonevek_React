@@ -12,7 +12,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { Game } from './components/Game';
 import { Main } from './components/Main';
-import { Room } from './components/Room';
+import { CreateRoom } from './components/CreateRoom';
 
 import './custom.css'
 
@@ -23,7 +23,7 @@ export default class App extends Component {
     return (
          <Layout>
             <AuthorizeRoute exact path='/' component={Main} />
-            <AuthorizeRoute path='/room' component={Room} />
+            <AuthorizeRoute path='/room' component={CreateRoom} />
             <AuthorizeRoute path='/game' component={Game} />
             <Route path={ApplicationPaths.ApiAuthorizationPrefix} component={ApiAuthorizationRoutes} />
          </Layout>

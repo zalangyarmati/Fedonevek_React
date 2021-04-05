@@ -55,9 +55,26 @@ namespace Fedonevek_React.Data
             var wordList = db.Words.Select(ToWord).ToList();
 
             var rand = new Random();
+            List<int> intList = new List<int>();
+            while (intList.Count < 25)
+            {
+                int number = rand.Next(0, wordList.Count());
+                if(intList.Contains(number) == false)
+                {
+                    intList.Add(number);
+                }
+            }
 
-            rand.Next(0, wordList.Count());
+            int position = 1;
 
+            //tranzakcióba
+            foreach (int number in intList)
+            {
+                var newCard = new DbCard { Position = position, Revealed = false, RoomId = newRecord.ID, Word = wordList[number].Keyword };
+                db.Cards.Add(newCard);
+                db.SaveChanges();
+                position++;
+            }
 
             return new Room(newRecord.ID, newRecord.Name, newRecord.CurrentWord, newRecord.CurrentNumber, newRecord.BluesTurn, newRecord.Finished, newRecord.Started);
         }
@@ -75,6 +92,46 @@ namespace Fedonevek_React.Data
                 {
                     dbRoom.CurrentWord = value.Word;
                     dbRoom.CurrentNumber = value.Number;
+                    db.Rooms.Update(dbRoom);
+                    db.SaveChanges();
+                    tran.Commit();
+                    return ToModel(dbRoom);
+                }
+            }
+        }
+
+        public Room RevealOne(int id)
+        {
+            var dbRoom = db.Rooms.FirstOrDefault(r => r.ID == id);
+            if (dbRoom == null)
+            {
+                return null;
+            }
+            else
+            {
+                using (var tran = db.Database.BeginTransaction(System.Data.IsolationLevel.RepeatableRead))
+                {
+                    dbRoom.CurrentNumber -= 1;
+                    db.Rooms.Update(dbRoom);
+                    db.SaveChanges();
+                    tran.Commit();
+                    return ToModel(dbRoom);
+                }
+            }
+        }
+
+        public Room ChangeTurn(int id)
+        {
+            var dbRoom = db.Rooms.FirstOrDefault(r => r.ID == id);
+            if (dbRoom == null)
+            {
+                return null;
+            }
+            else
+            {
+                using (var tran = db.Database.BeginTransaction(System.Data.IsolationLevel.RepeatableRead))
+                {
+                    dbRoom.BluesTurn = !dbRoom.BluesTurn;
                     db.Rooms.Update(dbRoom);
                     db.SaveChanges();
                     tran.Commit();

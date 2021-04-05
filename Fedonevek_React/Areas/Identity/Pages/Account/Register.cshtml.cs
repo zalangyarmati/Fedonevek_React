@@ -52,6 +52,12 @@ namespace Fedonevek_React.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "Becenév:")]
+            public string Nickname { get; set; }
+
+
+            [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Jelszo:")]
@@ -75,7 +81,7 @@ namespace Fedonevek_React.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email};
+                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, NickName = Input.Nickname};
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
