@@ -10,8 +10,6 @@ namespace Fedonevek_React.Models
     {
         public string NickName { get; set; }
         public int Point { get; set; }
-        public int RoomID { get; set; }
-        public bool Blue { get; set; }
-        public bool Spy { get; set; }
+
     }
 }

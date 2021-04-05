@@ -3,15 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Fedonevek_React.Models
+namespace Fedonevek_React.Data
 {
-    public class Word
+    public class DbWord
     {
-        public Word(int id, string keyword)
-        {
-            ID = id;
-            Keyword = keyword;
-        }
         public int ID { get; set; }
         public string Keyword { get; set; }
     }

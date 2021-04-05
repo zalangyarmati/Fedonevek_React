@@ -12,6 +12,12 @@ namespace Fedonevek_React.Data
 {
     public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
     {
+
+        public DbSet<DbCard> Cards { get; set; }
+        public DbSet<DbPlayer> Players { get; set; }
+        public DbSet<DbRoom> Rooms { get; set; }
+        public DbSet<DbWord> Words { get; set; }
+
         public ApplicationDbContext(
             DbContextOptions options,
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
