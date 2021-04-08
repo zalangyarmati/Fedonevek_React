@@ -61,9 +61,11 @@ export class Main extends Component {
                             </div>
                             <div class="card-body">
                                 {this.state.rooms.map(function (item, index) {
-                                    return <div class="bg-success mt-2 d-flex justify-content-center text-white p-2">
-                                                {item.name}
-                                           </div>
+                                    return <Link to={`/game/${item.id}`}>
+                                                <div class="bg-success mt-2 d-flex justify-content-center text-white p-2">
+                                                     {item.name}
+                                                </div>
+                                            </Link>
                                 })}
                             </div>
                         </div>

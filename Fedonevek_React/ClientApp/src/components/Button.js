@@ -53,7 +53,7 @@ export class Button extends Component {
             color = "#000000"
         }
         return (
-            <Card class="btn card d-flex justify-content-center" style={{ backgroundColor: color, fontSize: textsize }} onClick={this.changeClicked.bind(this)}>
+            <Card class="btn card d-flex justify-content-center" style={{ backgroundColor: color, fontSize: textsize }} onClick={() => this.props.handleClick(this.props.card.id)}>
                 {this.props.word}
             </Card>)
     }

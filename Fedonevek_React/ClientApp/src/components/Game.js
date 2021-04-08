@@ -23,11 +23,29 @@ export class Game extends Component {
             red: 7,
             black: 1,
             ended: false,
-            string: ""
+            string: "",
+            cards: []
         }
 
         this.redClicked = this.redClicked.bind(this);
         this.blueClicked = this.blueClicked.bind(this);
+        this.cardClicked = this.cardClicked.bind(this);
+    }
+
+    async componentDidMount() {
+        const { id } = this.props.match.params;
+        console.log(id);
+        const string = `https://localhost:5001/api/rooms/${id}/cards`
+        console.log(string);
+        await fetch(`https://localhost:5001/api/rooms/${id}/cards`)
+            .then(response => response.json())
+            .then(response => this.setState({ cards: response }));
+        //console.log(this.state.cards[0].word);
+        this.state.cards.map(function (item, index) {
+            console.log(item.word);
+        })
+
+        console.log("ok");
     }
 
     redClicked() {
@@ -52,9 +70,17 @@ export class Game extends Component {
                 string: "Kek nyert"
             });
         }
+        console.log("blue clicked");
+    }
+
+    cardClicked(id) {
+        console.log(`clicked ${id}`);
     }
 
     render() {
+        if (!this.state.cards) {
+            return <div />
+        }
         let string
         if (this.state.blue == 0 ) {
             string = "Kek nyert";
@@ -72,40 +98,30 @@ export class Game extends Component {
                 </div>
                     <div class="col-6">
                         <CardDeck style={{ padding: 12 }}>
-                            <Button team={this.state.cardlist[0].team} word={this.state.cardlist[0].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[1].team} word={this.state.cardlist[1].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[2].team} word={this.state.cardlist[2].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[3].team} word={this.state.cardlist[3].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[4].team} word={this.state.cardlist[4].word} bc={this.blueClicked} rc={this.redClicked}/>
-                </CardDeck>
-                <CardDeck style={{ padding: 12 }}>
-                            <Button team={this.state.cardlist[5].team} word={this.state.cardlist[5].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[6].team} word={this.state.cardlist[6].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[7].team} word={this.state.cardlist[7].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[8].team} word={this.state.cardlist[8].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[9].team} word={this.state.cardlist[9].word} bc={this.blueClicked} rc={this.redClicked}/>
-                </CardDeck>
-                <CardDeck style={{ padding: 12 }}>
-                            <Button team={this.state.cardlist[10].team} word={this.state.cardlist[10].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[11].team} word={this.state.cardlist[11].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[12].team} word={this.state.cardlist[12].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[13].team} word={this.state.cardlist[13].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[14].team} word={this.state.cardlist[14].word} bc={this.blueClicked} rc={this.redClicked}/>
-                </CardDeck>
-                <CardDeck style={{ padding: 12 }}>
-                            <Button team={this.state.cardlist[15].team} word={this.state.cardlist[15].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[16].team} word={this.state.cardlist[16].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[17].team} word={this.state.cardlist[17].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[18].team} word={this.state.cardlist[18].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[19].team} word={this.state.cardlist[19].word} bc={this.blueClicked} rc={this.redClicked}/>
-                </CardDeck>
-                <CardDeck style={{ padding: 12 }}>
-                            <Button team={this.state.cardlist[20].team} word={this.state.cardlist[20].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[21].team} word={this.state.cardlist[21].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[22].team} word={this.state.cardlist[22].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[23].team} word={this.state.cardlist[23].word} bc={this.blueClicked} rc={this.redClicked}/>
-                            <Button team={this.state.cardlist[24].team} word={this.state.cardlist[24].word} bc={this.blueClicked} rc={this.redClicked}/>
-                </CardDeck>
+                            {this.state.cards.map((item, index) => {
+                                return index < 5 ? < Button card={item} team={item.team} word={item.word} handleClick={this.cardClicked} /> : null
+                            })}
+                        </CardDeck>
+                        <CardDeck style={{ padding: 12 }}>
+                            {this.state.cards.map((item, index) => {
+                                return index >= 5 && index < 10 ? < Button card={item} team={item.team} word={item.word} handleClick={this.cardClicked} /> : null
+                            })}
+                        </CardDeck>
+                        <CardDeck style={{ padding: 12 }}>
+                            {this.state.cards.map((item, index) => {
+                                return index >= 10 && index < 15 ? < Button card={item} team={item.team} word={item.word} handleClick={this.cardClicked} /> : null
+                            })}
+                        </CardDeck>
+                        <CardDeck style={{ padding: 12 }}>
+                            {this.state.cards.map((item, index) => {
+                                return index >= 15 && index < 20 ? < Button card={item} team={item.team} word={item.word} handleClick={this.cardClicked} /> : null
+                            })}
+                        </CardDeck>
+                        <CardDeck style={{ padding: 12 }}>
+                            {this.state.cards.map((item, index) => {
+                                return index >= 20 && index < 25 ? < Button card={item} team={item.team} word={item.word} handleClick={this.cardClicked} /> : null
+                            })}
+                        </CardDeck>
 
             </div>
                     <div class="col-sm-3 d-flex pb-3">

@@ -11,6 +11,7 @@ namespace Fedonevek_React.Data
         public string Word { get; set; }
         public int Position { get; set; }
         public bool Revealed { get; set; }
+        public int Color { get; set; }
 
 
         public int RoomId { get; set; }

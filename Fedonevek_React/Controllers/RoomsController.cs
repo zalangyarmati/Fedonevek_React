@@ -40,6 +40,21 @@ namespace Fedonevek_React.Controllers
             }
         }
 
+        [HttpGet("{id}/cards")]
+        public ActionResult<Card> GetCards(int id)
+        {
+            var value = repository.FindById(id);
+            if (value == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                var cards = repository.GetCards(id);
+                return Ok(cards);
+            }
+        }
+
         [HttpPost]
         public ActionResult<Room> Create([FromBody] CreateRoom value)
         {
@@ -54,6 +69,8 @@ namespace Fedonevek_React.Controllers
             return Ok(modified);
         }
 
+
+        //patch?
         [HttpPost("{id}/reveal")]
         public ActionResult<Room> Reveal(int id)
         {
