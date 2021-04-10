@@ -1,9 +1,12 @@
 ﻿using Fedonevek_React.Controllers.Dto;
 using Fedonevek_React.Data;
+using Fedonevek_React.Hubs;
 using Fedonevek_React.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,10 +16,12 @@ namespace Fedonevek_React.Controllers
     [ApiController]
     public class RoomsController : Controller
     {
+        protected readonly IHubContext<GameHub> _gameHub;
         private readonly IRoomsRepository repository;
 
-        public RoomsController(IRoomsRepository repository)
+        public RoomsController(IRoomsRepository repository, [NotNull] IHubContext<GameHub> gameHub)
         {
+            _gameHub = gameHub;
             this.repository = repository;
         }
 
@@ -55,11 +60,33 @@ namespace Fedonevek_React.Controllers
             }
         }
 
+        [HttpGet("{id}/players")]
+        public ActionResult<Card> GetPlayers(int id)
+        {
+            var value = repository.FindById(id);
+            if (value == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                var players = repository.GetPlayers(id);
+                return Ok(players);
+            }
+        }
+
         [HttpPost]
         public ActionResult<Room> Create([FromBody] CreateRoom value)
         {
             var created = repository.Create(value);
             return Ok(created);
+        }
+
+        [HttpPost("side/{roomid}/{userid}")]
+        public ActionResult<Player> ChooseSide([FromBody] PlayerSide value, int roomid, string userid)
+        {
+            var player = repository.ChooseSide(value, roomid, userid);
+            return Ok(player);
         }
 
         [HttpPost("{id}")]
@@ -72,9 +99,10 @@ namespace Fedonevek_React.Controllers
 
         //patch?
         [HttpPost("{id}/reveal")]
-        public ActionResult<Room> Reveal(int id)
+        public async Task<ActionResult<Room>> RevealAsync(int id)
         {
             var modified = repository.RevealOne(id);
+            await _gameHub.Clients.All.SendAsync("reveal", id);
             return Ok(modified);
         }
 
@@ -84,6 +112,7 @@ namespace Fedonevek_React.Controllers
             var modified = repository.ChangeTurn(id);
             return Ok(modified);
         }
+
 
     }
 }

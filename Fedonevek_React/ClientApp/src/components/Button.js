@@ -40,20 +40,20 @@ export class Button extends Component {
         }
 
         let color
-        if (this.props.team == "0" && this.state.clicked) {
-            color = "#ffffff"
+        if (this.props.card.color == "0" && this.props.card.revealed == 1) {
+            color = "#a9a9a9"
         }
-        else if (this.props.team == "1" && this.state.clicked){
+        else if (this.props.card.color == "1" && this.props.card.revealed == 1){
             color = "#2222ff"
         }
-        else if (this.props.team == "2" && this.state.clicked) {
+        else if (this.props.card.color == "2" && this.props.card.revealed == 1) {
             color = "#ff2222"
         }
-        else if (this.props.team == "3" && this.state.clicked) {
-            color = "#000000"
+        else if (this.props.card.color == "3" && this.props.card.revealed == 1) {
+            color = "#000000";
         }
         return (
-            <Card class="btn card d-flex justify-content-center" style={{ backgroundColor: color, fontSize: textsize }} onClick={() => this.props.handleClick(this.props.card.id)}>
+            <Card class="btn card d-flex justify-content-center" style={{ backgroundColor: color, fontSize: textsize}} onClick={() => this.props.handleClick(this.props.card.id)}>
                 {this.props.word}
             </Card>)
     }

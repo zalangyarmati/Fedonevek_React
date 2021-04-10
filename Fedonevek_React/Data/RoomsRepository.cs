@@ -27,6 +27,10 @@ namespace Fedonevek_React.Data
         {
             return new Card(value.ID, value.Word, value.Position, value.Revealed, value.Color);
         }
+        private static Player ToPlayer(DbPlayer value)
+        {
+            return new Player(value.ID, value.IsBlue, value.IsSpy, value.RoomId, value.UserId);
+        }
 
         private static Word ToWord(DbWord value) 
         {
@@ -195,6 +199,31 @@ namespace Fedonevek_React.Data
         public IReadOnlyCollection<Card> GetCards(int id)
         {
             return db.Cards.Where(c => c.RoomId == id).Select(ToCard).ToList();            
+        }
+
+        public IReadOnlyCollection<Player> GetPlayers(int id)
+        {
+            return db.Players.Where(p => p.RoomId == id).Select(ToPlayer).ToList();
+        }
+
+        public Player ChooseSide(PlayerSide value, int roomid, string userid)
+        {
+            var dbPlayer = db.Players.FirstOrDefault(p => p.RoomId == roomid && p.UserId == userid);
+            if (dbPlayer == null)
+            {
+                var newRecord = new DbPlayer { RoomId = roomid, UserId = userid, IsBlue = value.IsBlue, IsSpy = value.IsSpy };
+                db.Players.Add(newRecord);
+                db.SaveChanges();
+                return new Player(newRecord.ID, newRecord.IsBlue, newRecord.IsSpy, newRecord.RoomId, newRecord.UserId);
+            }
+            else
+            {
+                dbPlayer.IsBlue = value.IsBlue;
+                dbPlayer.IsSpy = value.IsSpy;
+                db.Players.Update(dbPlayer);
+                db.SaveChanges();
+                return new Player(dbPlayer.ID, dbPlayer.IsBlue, dbPlayer.IsSpy, dbPlayer.RoomId, dbPlayer.UserId);
+            }
         }
     }
 }

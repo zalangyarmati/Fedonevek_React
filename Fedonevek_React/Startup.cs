@@ -109,6 +109,7 @@ namespace Fedonevek_React
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<MessageHub>("/chat");
+                endpoints.MapHub<GameHub>("/game");
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");

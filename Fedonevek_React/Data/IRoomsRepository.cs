@@ -16,5 +16,7 @@ namespace Fedonevek_React.Data
         Room RevealOne(int cardId);
         Room ChangeTurn(int id);
         IReadOnlyCollection<Card> GetCards(int id);
+        IReadOnlyCollection<Player> GetPlayers(int id);
+        Player ChooseSide(PlayerSide value, int roomid, string userid);
     }
 }
