@@ -48,23 +48,23 @@ namespace Fedonevek_React.Areas.Identity.Pages.Account
         {
             [Required]
             [DataType(DataType.Text)]
-            [Display(Name = "Felhasznalonev:")]
+            [Display(Name = "Email:")]
             public string Email { get; set; }
 
             [Required]
             [DataType(DataType.Text)]
-            [Display(Name = "Becenév:")]
-            public string Nickname { get; set; }
+            [Display(Name = "Felhasználónév:")]
+            public string Username { get; set; }
 
 
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Jelszo:")]
+            [Display(Name = "Jelszó:")]
             public string Password { get; set; }
 
             [DataType(DataType.Password)]
-            [Display(Name = "Jelszo megegyszer:")]
+            [Display(Name = "Jelszó mégegyszer:")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
         }
@@ -81,7 +81,7 @@ namespace Fedonevek_React.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, NickName = Input.Nickname};
+                var user = new ApplicationUser { UserName = Input.Username, Email = Input.Email};
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {

@@ -3,6 +3,8 @@ import { Card } from 'react-bootstrap';
 import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import './New.css';
+import { HubConnectionBuilder, LogLevel } from '@aspnet/signalr';
+
 
 export class Main extends Component {
     static displayName = Main.name;
@@ -11,12 +13,30 @@ export class Main extends Component {
         super(props);
 
         this.state = {
+            hubConnection: null,
             users: [],
             rooms: []
         };
     }
 
     componentDidMount() {
+        const hubConnection = new HubConnectionBuilder()
+            .withUrl("https://localhost:5001/game")
+            .configureLogging(LogLevel.Information)
+            .build();
+
+
+        this.setState({ hubConnection }, () => {
+            this.state.hubConnection
+                .start()
+                .then(() => console.log('GameHub Connection started!'))
+                .catch(err => console.log('Error while establishing connection :('));
+
+            this.state.hubConnection.on('roomcreated', () => {
+                this.getRooms();
+            });
+        });
+
         this.getTopList();
         this.getRooms();
     }

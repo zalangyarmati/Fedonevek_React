@@ -76,16 +76,18 @@ namespace Fedonevek_React.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Room> Create([FromBody] CreateRoom value)
+        public async Task<ActionResult<Room>> Create([FromBody] CreateRoom value)
         {
             var created = repository.Create(value);
+            await _gameHub.Clients.All.SendAsync("roomcreated");
             return Ok(created);
         }
 
         [HttpPost("side/{roomid}/{userid}")]
-        public ActionResult<Player> ChooseSide([FromBody] PlayerSide value, int roomid, string userid)
+        public async Task<ActionResult<Player>> ChooseSide([FromBody] PlayerSide value, int roomid, string userid)
         {
             var player = repository.ChooseSide(value, roomid, userid);
+            await _gameHub.Clients.All.SendAsync("changeside", value, roomid, userid, player.UserName, player.ID);
             return Ok(player);
         }
 
@@ -113,6 +115,13 @@ namespace Fedonevek_React.Controllers
             return Ok(modified);
         }
 
+        [HttpPost("{id}/start")]
+        public async Task<ActionResult<Room>> Start(int id)
+        {
+            var modified = repository.Start(id);
+            await _gameHub.Clients.All.SendAsync("start");
+            return Ok(modified);
+        }
 
     }
 }

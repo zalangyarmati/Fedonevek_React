@@ -29,7 +29,7 @@ namespace Fedonevek_React.Data
         }
         private static Player ToPlayer(DbPlayer value)
         {
-            return new Player(value.ID, value.IsBlue, value.IsSpy, value.RoomId, value.UserId);
+            return new Player(value.ID, value.IsBlue, value.IsSpy, value.RoomId, value.UserId, value.UserName);
         }
 
         private static Word ToWord(DbWord value) 
@@ -196,6 +196,22 @@ namespace Fedonevek_React.Data
             }
         }
 
+        public Room Start(int id)
+        {
+            var dbRoom = db.Rooms.FirstOrDefault(r => r.ID == id);
+            if (dbRoom == null)
+            {
+                return null;
+            }
+            else
+            {
+                dbRoom.Started = true;
+                db.Rooms.Update(dbRoom);
+                db.SaveChanges();
+                return ToModel(dbRoom);
+            }
+        }
+
         public IReadOnlyCollection<Card> GetCards(int id)
         {
             return db.Cards.Where(c => c.RoomId == id).Select(ToCard).ToList();            
@@ -208,13 +224,14 @@ namespace Fedonevek_React.Data
 
         public Player ChooseSide(PlayerSide value, int roomid, string userid)
         {
+            var dbUser = db.Users.FirstOrDefault(u => u.Id == userid);
             var dbPlayer = db.Players.FirstOrDefault(p => p.RoomId == roomid && p.UserId == userid);
             if (dbPlayer == null)
             {
-                var newRecord = new DbPlayer { RoomId = roomid, UserId = userid, IsBlue = value.IsBlue, IsSpy = value.IsSpy };
+                var newRecord = new DbPlayer { RoomId = roomid, UserId = userid, IsBlue = value.IsBlue, IsSpy = value.IsSpy, UserName = dbUser.UserName };
                 db.Players.Add(newRecord);
                 db.SaveChanges();
-                return new Player(newRecord.ID, newRecord.IsBlue, newRecord.IsSpy, newRecord.RoomId, newRecord.UserId);
+                return new Player(newRecord.ID, newRecord.IsBlue, newRecord.IsSpy, newRecord.RoomId, newRecord.UserId, newRecord.UserName);
             }
             else
             {
@@ -222,8 +239,10 @@ namespace Fedonevek_React.Data
                 dbPlayer.IsSpy = value.IsSpy;
                 db.Players.Update(dbPlayer);
                 db.SaveChanges();
-                return new Player(dbPlayer.ID, dbPlayer.IsBlue, dbPlayer.IsSpy, dbPlayer.RoomId, dbPlayer.UserId);
+                return new Player(dbPlayer.ID, dbPlayer.IsBlue, dbPlayer.IsSpy, dbPlayer.RoomId, dbPlayer.UserId, dbPlayer.UserName);
             }
         }
+
+
     }
 }
