@@ -7,7 +7,7 @@ namespace Fedonevek_React.Models
 {
     public class Room
     {
-        public Room(int id, string name, string word, int number, bool turn, bool finished, bool started)
+        public Room(int id, string name, string word, int number, bool turn, bool finished, bool started, int bluescore, int redscore)
         {
             ID = id;
             Name = name;
@@ -16,6 +16,8 @@ namespace Fedonevek_React.Models
             BluesTurn = turn;
             Finished = finished;
             Started = started;
+            BlueScore = bluescore;
+            RedScore = redscore;
         }
 
         public int ID { get; set; }
@@ -26,6 +28,9 @@ namespace Fedonevek_React.Models
         public bool Finished { get; set; }
 
         public bool Started { get; set; }
+
+        public int BlueScore { get; set; }
+        public int RedScore { get; set; }
 
     }
 }

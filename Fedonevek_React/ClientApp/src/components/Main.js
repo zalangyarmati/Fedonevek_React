@@ -14,6 +14,7 @@ export class Main extends Component {
 
         this.state = {
             hubConnection: null,
+            blink: true,
             users: [],
             rooms: []
         };
@@ -39,6 +40,12 @@ export class Main extends Component {
 
         this.getTopList();
         this.getRooms();
+
+        setInterval(() => {
+            this.setState(previous => {
+                return { blink: !previous.blink}
+            })
+        }, 1000)
     }
 
     getTopList() {
@@ -55,11 +62,12 @@ export class Main extends Component {
     }
 
     render() {
+        var b = this.state.blink
         return (
             <div class="container">
                 <div class="row">
 
-                    <div class="col-sm-3 d-flex pb-3">
+                    <div class="col-sm-3  pb-3">
                         <div class="card card-block card-fill">
                             <div class="card-header bg-transparent col d-flex justify-content-center">
                                 <h4>Ranglista</h4>
@@ -80,12 +88,21 @@ export class Main extends Component {
                                 <h4>Szobak</h4>
                             </div>
                             <div class="card-body">
-                                {this.state.rooms.map(function (item, index) {
-                                    return <Link to={`/game/${item.id}`}>
-                                                <div class="bg-success mt-2 d-flex justify-content-center text-white p-2">
-                                                     {item.name}
-                                                </div>
-                                            </Link>
+                                {
+                                    this.state.rooms.map(function (item, index) {
+                                    if (item.started == true && b)
+                                        return <Link to={`/game/${item.id}`}>
+                                            <div class="bg-success mt-2 d-flex justify-content-center text-white p-2" style={{borderRadius: '12px'}}>
+                                                        <span style={{ marginLeft: "auto" }}>{item.name}</span>
+                                                        <span style={{ marginLeft: "auto" }}>&#128308;</span>
+                                                    </div>
+                                                </Link>
+                                    else 
+                                        return <Link to={`/game/${item.id}`}>
+                                                   <div class="bg-success mt-2 d-flex justify-content-center text-white p-2" style={{borderRadius: '12px'}}>
+                                                        <span >{item.name}</span>
+                                                    </div>
+                                                </Link>
                                 })}
                             </div>
                         </div>

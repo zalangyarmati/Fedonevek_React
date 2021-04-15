@@ -19,7 +19,7 @@ namespace Fedonevek_React.Data
 
         private static Room ToModel(DbRoom value)
         {
-            return new Room(value.ID, value.Name, value.CurrentWord, value.CurrentNumber, value.BluesTurn, value.Finished, value.Started);
+            return new Room(value.ID, value.Name, value.CurrentWord, value.CurrentNumber, value.BluesTurn, value.Finished, value.Started, value.BlueScore, value.RedScore);
         }
 
 
@@ -58,7 +58,7 @@ namespace Fedonevek_React.Data
             if (db.Rooms.Any(s => EF.Functions.Like(s.Name, value.Name)))
                 throw new ArgumentException("Ilyen nevű szoba már létezik!");
 
-            var newRecord = new DbRoom { Name = value.Name, Started = false, Finished = false };
+            var newRecord = new DbRoom { Name = value.Name, BluesTurn = true, Started = false, Finished = false, BlueScore = 9, RedScore = 8 };
             db.Rooms.Add(newRecord);
             db.SaveChanges();
 
@@ -128,7 +128,7 @@ namespace Fedonevek_React.Data
             }
 
 
-            return new Room(newRecord.ID, newRecord.Name, newRecord.CurrentWord, newRecord.CurrentNumber, newRecord.BluesTurn, newRecord.Finished, newRecord.Started);
+            return new Room(newRecord.ID, newRecord.Name, newRecord.CurrentWord, newRecord.CurrentNumber, newRecord.BluesTurn, newRecord.Finished, newRecord.Started, newRecord.BlueScore, newRecord.RedScore);
         }
 
         public Room NewWord(NewWord value)
@@ -165,9 +165,32 @@ namespace Fedonevek_React.Data
             {
                 using (var tran = db.Database.BeginTransaction(System.Data.IsolationLevel.RepeatableRead))
                 {
-                    dbCard.Revealed = true;
+                    if (dbCard.Color == 1 && dbRoom.BlueScore > 0 && dbRoom.CurrentNumber > 0)
+                    {
+                        dbCard.Revealed = true;
+                        dbRoom.BlueScore -= 1;
+                        dbRoom.CurrentNumber -= 1;
+                    }
+                    else if (dbCard.Color == 2 && dbRoom.RedScore > 0 && dbRoom.CurrentNumber > 0)
+                    {
+                        dbCard.Revealed = true;
+                        dbRoom.RedScore -= 1;
+                        dbRoom.CurrentNumber -= 1;
+                    }
+                    //Rossz helyre tippelt!
+                    //todo
+                    else if (dbCard.Color == 0 && dbRoom.CurrentNumber > 0)
+                    {
+                        dbCard.Revealed = true;
+                        dbRoom.CurrentNumber -= 1;
+                    }
+                    else if (dbCard.Color == 3)
+                    {
+                        dbCard.Revealed = true;
+                        dbRoom.CurrentNumber -= 1;
+                    }
+
                     db.Cards.Update(dbCard);
-                    dbRoom.CurrentNumber -= 1;
                     db.Rooms.Update(dbRoom);
                     db.SaveChanges();
                     tran.Commit();

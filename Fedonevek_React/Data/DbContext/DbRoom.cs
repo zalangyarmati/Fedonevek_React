@@ -20,6 +20,9 @@ namespace Fedonevek_React.Data
         public ICollection<DbCard> Cards { get; set; }
 
         public ICollection<DbPlayer> Players { get; set; }
+
+        public int BlueScore { get; set; }
+        public int RedScore { get; set; }
     }
     
 }

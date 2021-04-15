@@ -92,9 +92,11 @@ namespace Fedonevek_React.Controllers
         }
 
         [HttpPost("{id}")]
-        public ActionResult<Room> NewWord([FromBody] NewWord value)
+        public async Task<ActionResult<Room>> NewWord([FromBody] NewWord value)
         {
+            var changed = repository.ChangeTurn(value.RoomID);
             var modified = repository.NewWord(value);
+            await _gameHub.Clients.All.SendAsync("newWord", modified.CurrentWord, modified.CurrentNumber);
             return Ok(modified);
         }
 
@@ -104,7 +106,7 @@ namespace Fedonevek_React.Controllers
         public async Task<ActionResult<Room>> RevealAsync(int id)
         {
             var modified = repository.RevealOne(id);
-            await _gameHub.Clients.All.SendAsync("reveal", id);
+            await _gameHub.Clients.All.SendAsync("reveal", id, modified.BlueScore, modified.RedScore, modified.CurrentNumber);
             return Ok(modified);
         }
 
