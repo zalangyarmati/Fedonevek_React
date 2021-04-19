@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "bootstrap": "^4.6.0",
+    "fireworks": "^2.2.7",
     "jquery": "^3.5.1",
     "merge": "^1.2.1",
     "oidc-client": "^1.9.0",

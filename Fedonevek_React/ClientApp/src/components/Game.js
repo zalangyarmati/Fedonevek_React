@@ -6,6 +6,8 @@ import { Button } from './Button';
 import { Chat } from './Chat';
 import { SpyCard } from './SpyCard';
 import authService from './api-authorization/AuthorizeService';
+import fx from 'fireworks';
+
 
 export class Game extends Component {
     static displayName = Game.name;
@@ -21,7 +23,9 @@ export class Game extends Component {
             side:
                 { isBlue: false, isSpy: false },
             cards: [],
-            players: []
+            players: [],
+            firework: false,
+            intervalID: 0
         }
 
         this.cardClicked = this.cardClicked.bind(this);
@@ -48,21 +52,29 @@ export class Game extends Component {
                 .then(() => console.log('GameHub Connection started!'))
                 .catch(err => console.log('Error while establishing connection :('));
 
-            this.state.hubConnection.on('reveal', (cardId, bluepoint, redpoint, current) => {
+            this.state.hubConnection.on('reveal', (cardId, bluepoint, redpoint, current, finished) => {
                 const id = cardId;
 
                 let roomcopy = this.state.room;
                 let cardscopy = this.state.cards;
                 cardscopy.map((item) => {
                     if (item.id == id) {
-                        if (item.color == 1) roomcopy.blueScore = bluepoint;
-                        if (item.color == 2) roomcopy.redScore = redpoint;
-                        if (roomcopy.currentNumber != current) item.revealed = true;
+                        roomcopy.blueScore = bluepoint;
+                        roomcopy.redScore = redpoint;
+                        item.revealed = true;
                     }
                 })
+                roomcopy.finished = finished
                 roomcopy.currentNumber = current;
+                this.setState({ cards: cardscopy, room: roomcopy })
+                if (finished) {
+                    cardscopy.map((item) => {
+                        item.revealed = true;
+                    })
+                    this.fireworks();
+                }
 
-                this.setState({ cards: cardscopy })
+
             });
             this.state.hubConnection.on('changeside', async () => {
                 this.getPlayers(id);
@@ -85,6 +97,7 @@ export class Game extends Component {
 
     componentWillUnmount() {
         authService.unsubscribe(this._subscription);
+        clearInterval(this.state.intervalID); 
     }
 
     async getRoom(id) {
@@ -111,10 +124,31 @@ export class Game extends Component {
     }
 
     startGame() {
-        var roomid = this.state.room.id;
-        fetch(`https://localhost:5001/api/rooms/${roomid}/start`, {
-            method: 'POST'
-        });
+        var hasRed = false;
+        var hasBlue = false;
+        var hasRedspy = false;
+        var hasBluespy = false;
+        this.state.players.map((player) => {
+            if (!player.isBlue && !player.isSpy) {
+                hasRed = true;
+            }
+            else if (!player.isBlue && player.isSpy) {
+                hasRedspy = true;
+            }
+            else if (player.isBlue && !player.isSpy) {
+                hasBlue = true;
+            }
+            else if (player.isBlue && player.isSpy) {
+                hasBluespy = true;
+            }
+        })
+
+        if (hasRed && hasBlue && hasRedspy && hasBluespy) {
+            var roomid = this.state.room.id;
+            fetch(`https://localhost:5001/api/rooms/${roomid}/start`, {
+                method: 'POST'
+            });
+        }
     }
 
     changeSide(side, spy) {
@@ -126,7 +160,7 @@ export class Game extends Component {
         this.setState({ side: copy })
         console.log(this.state.side.isBlue)
         console.log(this.state.side.isSpy)
-        console.log(this.state.room.id)
+        console.log(this.state.players)
 
         fetch(`https://localhost:5001/api/rooms/side/${roomid}/${userid}`, {
             method: 'POST',
@@ -136,6 +170,32 @@ export class Game extends Component {
     }
 
     cardClicked(id) {
+        if (!this.state.room.finished && this.state.room.currentNumber > 0) {
+            var player;
+            this.state.players.map((item) => {
+                if (item.userId == this.state.userid) {
+                    player = item;
+                }
+            })
+
+            var bluesTurn = this.state.room.bluesTurn
+            var theirTurn = false;
+            if ((player.isBlue && bluesTurn) || (!player.isBlue && !bluesTurn)) {
+                theirTurn = true
+            }
+            if (!player.isSpy && theirTurn) {
+                this.state.cards.map((item) => {
+                    if (item.id == id && item.revealed == false) {
+                        fetch(`https://localhost:5001/api/rooms/${id}/reveal`, {
+                            method: 'POST'
+                        });
+                    }
+                })
+            }
+        }
+    }
+
+    sendWord = () => {
         var player;
         this.state.players.map((item) => {
             if (item.userId == this.state.userid) {
@@ -143,34 +203,29 @@ export class Game extends Component {
             }
         })
 
-
-
-        if (!player.isSpy) {
-            this.state.cards.map((item) => {
-                if (item.id == id && item.revealed == false) {
-                    fetch(`https://localhost:5001/api/rooms/${id}/reveal`, {
-                        method: 'POST'
-                    });
-                }
-            })
+        var bluesTurn = this.state.room.bluesTurn
+        var theirTurn = false;
+        if ((player.isBlue && !bluesTurn) || (!player.isBlue && bluesTurn)) {
+            theirTurn = true
         }
-    }
 
-    sendWord = () => {
-        let newWord = {
-            RoomID: this.state.room.id,
-            Word: this.refs.spyWord.value,
-            Number: this.refs.spyNumber.value
-        };
 
-        fetch(`https://localhost:5001/api/rooms/${this.state.room.id}`, {
-            method: 'POST',
-            headers: { 'Content-type': 'application/json' },
-            body: JSON.stringify(newWord)
-        });
+        if (this.state.room.currentNumber == 0 && theirTurn && this.refs.spyNumber.value > 0 && this.refs.spyWord.value != "") {
+            let newWord = {
+                RoomID: this.state.room.id,
+                Word: this.refs.spyWord.value,
+                Number: this.refs.spyNumber.value
+            };
 
-        this.refs.spyWord.value = "";
-        this.refs.spyNumber.value = "";
+            fetch(`https://localhost:5001/api/rooms/${this.state.room.id}`, {
+                method: 'POST',
+                headers: { 'Content-type': 'application/json' },
+                body: JSON.stringify(newWord)
+            });
+
+            this.refs.spyWord.value = "";
+            this.refs.spyNumber.value = "";
+        }
     }
 
     getMe() {
@@ -181,6 +236,30 @@ export class Game extends Component {
         })
     }
 
+    fireworks() {
+        var fwID = 0;
+        if (this.state.room.blueScore == 0 && !this.state.firework) {
+            fwID = window.setInterval(function () {
+                fx({
+                    x: Math.floor(Math.random() * window.innerWidth * 0.9),
+                    y: Math.floor(Math.random() * window.innerHeight * 0.75),
+                    colors: ['#0275d8', '#87ceeb', '#0000ff']
+                });
+            }, 400);
+            this.setState({ firework: true });
+        }
+        else if (this.state.room.redScore == 0 && !this.state.firework) {
+            fwID = window.setInterval(function () {
+                fx({
+                    x: Math.floor(Math.random() * window.innerWidth * 0.9),
+                    y: Math.floor(Math.random() * window.innerHeight * 0.75),
+                    colors: ['#ff6347', 'fa8072', '#ff0000']
+                });
+            }, 400);
+            this.setState({ firework: true });
+        }
+        this.setState({ intervalID: fwID });  
+    }
 
     render() {
         if (!this.state.cards && !this.state.room && !this.state.userid) {
@@ -209,6 +288,12 @@ export class Game extends Component {
         else{
             wordColor = "#d9534f";
         }
+
+        var hasWord = false;
+        if (this.state.room.currentWord != null) {
+            hasWord = true;
+        }
+
         if (this.state.room.started == true)
             return (
                 <div class="container">
@@ -267,8 +352,12 @@ export class Game extends Component {
                     <div class="row">
                         <div class="col-3">
                             <h1>A szó:</h1>
-                            <Card style={{ backgroundColor: wordColor }}>{this.state.room.currentWord}</Card>
-                            <p>{this.state.room.currentNumber}</p>
+                            {hasWord &&
+                                <div>
+                                    <Card style={{ backgroundColor: wordColor }}>{this.state.room.currentWord}</Card>
+                                    <Card style={{ backgroundColor: wordColor }}>{this.state.room.currentNumber}</Card>
+                                </div>
+                            }
                             {spyRender &&
                                 <div>
                                     <input class="flex-grow-1" type="number" ref="spyNumber" />

@@ -106,7 +106,7 @@ namespace Fedonevek_React.Controllers
         public async Task<ActionResult<Room>> RevealAsync(int id)
         {
             var modified = repository.RevealOne(id);
-            await _gameHub.Clients.All.SendAsync("reveal", id, modified.BlueScore, modified.RedScore, modified.CurrentNumber);
+            await _gameHub.Clients.All.SendAsync("reveal", id, modified.BlueScore, modified.RedScore, modified.CurrentNumber, modified.Finished);
             return Ok(modified);
         }
 

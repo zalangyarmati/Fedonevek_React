@@ -75,7 +75,7 @@ export class Main extends Component {
                             <div class="card-body">
                                 {this.state.users.map(function (item, index) {
                                     return <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
-                                                {item.nickName} <br/>{item.point} p
+                                                {item.userName} <br/>{item.point} p
                                            </div>
                                 })}
                             </div>
@@ -90,19 +90,25 @@ export class Main extends Component {
                             <div class="card-body">
                                 {
                                     this.state.rooms.map(function (item, index) {
-                                    if (item.started == true && b)
-                                        return <Link to={`/game/${item.id}`}>
-                                            <div class="bg-success mt-2 d-flex justify-content-center text-white p-2" style={{borderRadius: '12px'}}>
+                                        if (!item.finished) {
+                                            if (item.started == true && b)
+                                                return <Link to={`/game/${item.id}`}>
+                                                    <div class="bg-success mt-2 d-flex justify-content-center text-white p-2" style={{ borderRadius: '12px' }}>
                                                         <span style={{ marginLeft: "auto" }}>{item.name}</span>
                                                         <span style={{ marginLeft: "auto" }}>&#128308;</span>
                                                     </div>
                                                 </Link>
-                                    else 
-                                        return <Link to={`/game/${item.id}`}>
-                                                   <div class="bg-success mt-2 d-flex justify-content-center text-white p-2" style={{borderRadius: '12px'}}>
+                                            else
+                                                return <Link to={`/game/${item.id}`}>
+                                                    <div class="bg-success mt-2 d-flex justify-content-center text-white p-2" style={{ borderRadius: '12px' }}>
                                                         <span >{item.name}</span>
                                                     </div>
                                                 </Link>
+                                        }
+                                        else {
+                                            return 
+                                        }
+
                                 })}
                             </div>
                         </div>
