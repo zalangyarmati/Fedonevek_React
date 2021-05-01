@@ -79,8 +79,6 @@ export class Main extends Component {
         fetch(`https://localhost:5001/api/users/friends/${id}`)
             .then(response => response.json())
             .then(response => this.setState({ friends: response }))
-        console.log(id)
-        console.log(this.state.friends)
     }
 
     render() {
@@ -96,8 +94,17 @@ export class Main extends Component {
                             </div>
                             <div class="card-body">
                                 {this.state.users.map(function (item, index) {
-                                    return <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
+                                    if (index == 0) return <div class="mt-2 d-flex justify-content-center text-white p-2" style={{ borderRadius: '12px', backgroundColor: '#ffd700' }}>
                                                 {item.userName} <br/>{item.point} p
+                                           </div>
+                                    if (index == 1) return <div class="mt-2 d-flex justify-content-center text-white p-2" style={{ borderRadius: '12px', backgroundColor: '#C0C0C0' }}>
+                                        {item.userName} <br />{item.point} p
+                                           </div>
+                                    if (index == 2) return <div class="mt-2 d-flex justify-content-center text-white p-2" style={{ borderRadius: '12px', backgroundColor: '#cd7f32' }}>
+                                        {item.userName} <br />{item.point} p
+                                           </div>
+                                    if (index > 2) return <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2" style={{ borderRadius: '12px' }}>
+                                        {item.userName} <br />{item.point} p
                                            </div>
                                 })}
                             </div>
@@ -111,7 +118,7 @@ export class Main extends Component {
                             </div>
                             <div class="card-body">
                                 {
-                                    this.state.rooms.map(function (item, index) {
+                                    this.state.rooms.map(function (item) {
                                         if (!item.finished) {
                                             if (item.started == true && b)
                                                 return <Link to={`/game/${item.id}`}>
@@ -122,7 +129,7 @@ export class Main extends Component {
                                                 </Link>
                                             else
                                                 return <Link to={`/game/${item.id}`}>
-                                                    <div class="bg-success mt-2 d-flex justify-content-center text-white p-2" style={{ borderRadius: '12px' }}>
+                                                    <div class="bg-success mt-2 d-flex justify-content-center text-white p-2" style= {{borderRadius: '12px'}}>
                                                         <span >{item.name}</span>
                                                     </div>
                                                 </Link>
@@ -142,8 +149,8 @@ export class Main extends Component {
                                 <h4>Baratok</h4>
                             </div>
                             <div class="card-body">
-                                {this.state.friends.map(function (item, index) {
-                                    return <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
+                                {this.state.friends.map(function (item) {
+                                    return <div class="mt-2 d-flex justify-content-center text-white p-2" style={{ borderRadius: '12px', backgroundColor: '#DA70D6' }}>
                                             {item.userName} 
                                            </div>
                                 })}
@@ -160,8 +167,6 @@ export class Main extends Component {
                     </Link>
                 </div>
             </div>
-
-
         );
     }
 }

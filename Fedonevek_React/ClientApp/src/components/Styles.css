@@ -29,6 +29,18 @@
     overflow: scroll;
     overflow-x: hidden;
 }
+
+.grad-red {
+    background: linear-gradient(to bottom right, #ff7755 0%, #aa0000 100%);
+}
+
+.grad-green {
+    background: linear-gradient(to bottom right, #00cc99 0%, #336600 100%);
+}
+
+.grad-blue {
+    background: linear-gradient(to bottom right, #00ccff 0%, #000066 100%);
+}
 /*
 .btn {
     word-break: break-all;

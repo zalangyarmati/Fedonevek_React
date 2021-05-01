@@ -327,7 +327,7 @@ export class Game extends Component {
                 <div class="container">
                     <div class="row">
                         <div class="col-sm-3 d-flex pb-3">
-                            <div class="card card-block card-fill  bg-danger">
+                            <div class="card card-block card-fill  grad-red">
                                 <h1>{this.state.room.redScore}</h1>
                                 {this.state.players.map((item) => {
                                     return item.isBlue == false && item.isSpy == true ? <p onClick={() => this.friendModal(item)} style={{ fontWeight: "bold" }}>{item.userName}</p> : null
@@ -442,7 +442,7 @@ export class Game extends Component {
             <div class="container">
                 <div class="row">
                     <div class="col-sm-3 d-flex pb-3">
-                        <div class="card card-block card-fill  bg-danger" onClick={() => this.changeSide(false, false)} >
+                        <div class="card card-block card-fill grad-red" onClick={() => this.changeSide(false, false)} >
                             <h1>Piros játékosok</h1>
                             {this.state.players.map((item) => {
                                 return item.isBlue == false && item.isSpy == false ? <p>{item.userName}</p> : null
@@ -453,7 +453,7 @@ export class Game extends Component {
 
                     </div>
                     <div class="col-sm-3 d-flex pb-3">
-                        <div class="card card-block card-fill bg-primary" onClick={() => this.changeSide(true, false)} >
+                        <div class="card card-block card-fill grad-blue" onClick={() => this.changeSide(true, false)} >
                             <h1>Kék játékosok</h1>
                             {this.state.players.map((item) => {
                                 return item.isBlue == true && item.isSpy == false ? <p>{item.userName}</p> : null
@@ -463,7 +463,7 @@ export class Game extends Component {
                 </div>
                 <div class="row">
                     <div class="col-sm-3 d-flex pb-3">
-                        <div class="card card-block card-fill  bg-danger" onClick={() => this.changeSide(false, true)}>
+                        <div class="card card-block card-fill grad-red" onClick={() => this.changeSide(false, true)}>
                             <h1>Kém</h1>
                             {this.state.players.map((item) => {
                                 return item.isBlue == false && item.isSpy == true ? <p>{item.userName}</p> : null
@@ -471,10 +471,10 @@ export class Game extends Component {
                         </div>
                     </div>
                     <div class="col-6 d-flex justify-content-center">
-                        <button type="button" class="btn btn-success" onClick={() => this.startGame()}>Játék indítása</button>
+                        <button type="button" class="btn grad-green" onClick={() => this.startGame()}>Játék indítása</button>
                     </div>
                     <div class="col-sm-3 d-flex pb-3">
-                        <div class="card card-block card-fill bg-primary" onClick={() => this.changeSide(true, true)} >
+                        <div class="card card-block card-fill grad-blue" onClick={() => this.changeSide(true, true)} >
                             <h1>Kém</h1>
                             {this.state.players.map((item) => {
                                 return item.isBlue == true && item.isSpy == true ? <p>{item.userName}</p> : null

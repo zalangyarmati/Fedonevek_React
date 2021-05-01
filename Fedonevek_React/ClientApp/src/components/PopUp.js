@@ -4,7 +4,7 @@ import { Modal, Button } from 'react-bootstrap';
 export class PopUp extends Component {
 
     componentDidMount() {
-        console.log("created");
+
     }
 
     constructor(props) {
