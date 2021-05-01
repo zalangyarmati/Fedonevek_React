@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { Card } from 'react-bootstrap';
-import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import './New.css';
+import './Styles.css';
 import { HubConnectionBuilder, LogLevel } from '@aspnet/signalr';
+import authService from './api-authorization/AuthorizeService';
 
 
 export class Main extends Component {
@@ -16,11 +15,16 @@ export class Main extends Component {
             hubConnection: null,
             blink: true,
             users: [],
-            rooms: []
+            rooms: [],
+            userid: {},
+            friends: []
         };
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        this._subscription = authService.subscribe(() => this.getUserId());
+        await this.getUserId();
+
         const hubConnection = new HubConnectionBuilder()
             .withUrl("https://localhost:5001/game")
             .configureLogging(LogLevel.Information)
@@ -40,12 +44,22 @@ export class Main extends Component {
 
         this.getTopList();
         this.getRooms();
+        this.getFriends(this.state.userid);
 
         setInterval(() => {
             this.setState(previous => {
                 return { blink: !previous.blink}
             })
         }, 1000)
+    }
+
+    componentWillUnmount() {
+        authService.unsubscribe(this._subscription);
+    }
+
+    async getUserId() {
+        const [user] = await Promise.all([authService.getUser()]);
+        this.setState({ userid: user.sub });
     }
 
     getTopList() {
@@ -59,6 +73,14 @@ export class Main extends Component {
         fetch('https://localhost:5001/api/rooms')
             .then(response => response.json())
             .then(response => this.setState({ rooms: response }))
+    }
+
+    getFriends(id) {
+        fetch(`https://localhost:5001/api/users/friends/${id}`)
+            .then(response => response.json())
+            .then(response => this.setState({ friends: response }))
+        console.log(id)
+        console.log(this.state.friends)
     }
 
     render() {
@@ -120,18 +142,11 @@ export class Main extends Component {
                                 <h4>Baratok</h4>
                             </div>
                             <div class="card-body">
-                                <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
-                                    T
-                                </div>
-                                <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
-                                    O
-                                </div>
-                                <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
-                                    D
-                                </div>
-                                <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
-                                    O
-                                </div>
+                                {this.state.friends.map(function (item, index) {
+                                    return <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2">
+                                            {item.userName} 
+                                           </div>
+                                })}
                             </div>
                         </div>
                     </div>

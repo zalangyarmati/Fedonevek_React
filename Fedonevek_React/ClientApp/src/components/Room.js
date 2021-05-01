@@ -1,6 +1,4 @@
 ﻿import React, { Component } from 'react';
-import { Card } from 'react-bootstrap';
-import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
 
 

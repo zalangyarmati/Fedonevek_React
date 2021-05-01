@@ -1,4 +1,5 @@
-﻿using Fedonevek_React.Models;
+﻿using Fedonevek_React.Data.DbContext;
+using Fedonevek_React.Models;
 using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ namespace Fedonevek_React.Data
         public DbSet<DbPlayer> Players { get; set; }
         public DbSet<DbRoom> Rooms { get; set; }
         public DbSet<DbWord> Words { get; set; }
+        public DbSet<DbFriend> Friends { get; set; }
 
         public ApplicationDbContext(
             DbContextOptions options,

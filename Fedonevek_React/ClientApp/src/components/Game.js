@@ -1,10 +1,11 @@
 ﻿import React, { Component } from 'react';
-import { Card, CardDeck, Modal } from 'react-bootstrap';
+import { Card, CardDeck } from 'react-bootstrap';
 import { HubConnectionBuilder, LogLevel } from '@aspnet/signalr';
-import './New.css';
+import './Styles.css';
 import { Button } from './Button';
 import { Chat } from './Chat';
 import { SpyCard } from './SpyCard';
+import { PopUp } from './PopUp';
 import authService from './api-authorization/AuthorizeService';
 import fx from 'fireworks';
 
@@ -25,7 +26,10 @@ export class Game extends Component {
             cards: [],
             players: [],
             firework: false,
-            intervalID: 0
+            intervalID: 0,
+            show: false,
+            friend:
+                { userId: "", userName: ""}
         }
 
         this.cardClicked = this.cardClicked.bind(this);
@@ -97,7 +101,7 @@ export class Game extends Component {
 
     componentWillUnmount() {
         authService.unsubscribe(this._subscription);
-        clearInterval(this.state.intervalID); 
+        clearInterval(this.state.intervalID);
     }
 
     async getRoom(id) {
@@ -228,6 +232,18 @@ export class Game extends Component {
         }
     }
 
+    friendModal(item) {
+        if (item.userId != this.state.userid) {
+            var friendCopy = this.state.friend;
+            friendCopy.userId = item.userId;
+            friendCopy.userName = item.userName;
+            this.setState({
+                show: !this.state.show,
+                friend: friendCopy
+            });
+        }
+    }
+
     getMe() {
         this.state.players.map((item) => {
             if (item.userId == this.state.userid) {
@@ -258,7 +274,19 @@ export class Game extends Component {
             }, 400);
             this.setState({ firework: true });
         }
-        this.setState({ intervalID: fwID });  
+        this.setState({ intervalID: fwID });
+    }
+
+    modalOk = (id) => {
+        this.setState({ show: false });
+        fetch(`https://localhost:5001/api/users/friends/new/${id}/${this.state.userid}`, {
+            method: 'POST'
+        })
+        console.log(`modal ok ${id}`);
+    }
+    modalCancel = () => {
+        this.setState({ show: false })
+        console.log("modal cancel");
     }
 
     render() {
@@ -280,12 +308,12 @@ export class Game extends Component {
             }
         })
 
-        let wordColor 
+        let wordColor
         if (this.state.room.bluesTurn) {
             wordColor = "#0275d8";
 
         }
-        else{
+        else {
             wordColor = "#d9534f";
         }
 
@@ -302,10 +330,10 @@ export class Game extends Component {
                             <div class="card card-block card-fill  bg-danger">
                                 <h1>{this.state.room.redScore}</h1>
                                 {this.state.players.map((item) => {
-                                    return item.isBlue == false && item.isSpy == true ? <p style={{ fontWeight: "bold" }}>{item.userName}</p> : null
+                                    return item.isBlue == false && item.isSpy == true ? <p onClick={() => this.friendModal(item)} style={{ fontWeight: "bold" }}>{item.userName}</p> : null
                                 })}
                                 {this.state.players.map((item) => {
-                                    return item.isBlue == false && item.isSpy == false ? <p>{item.userName}</p> : null
+                                    return item.isBlue == false && item.isSpy == false ? <p onClick={() => this.friendModal(item)}>{item.userName}</p> : null
                                 })}
                             </div>
                         </div>
@@ -335,16 +363,15 @@ export class Game extends Component {
                                     return index >= 20 && index < 25 ? < Button card={item} handleClick={this.cardClicked} /> : null
                                 })}
                             </CardDeck>
-
                         </div>
                         <div class="col-sm-3 d-flex pb-3">
                             <div class="card card-block card-fill bg-primary ">
                                 <h1>{this.state.room.blueScore}</h1>
                                 {this.state.players.map((item) => {
-                                    return item.isBlue == true && item.isSpy == true ? <p style={{ fontWeight: "bold" }}>{item.userName}</p> : null
+                                    return item.isBlue == true && item.isSpy == true ? <p onClick={() => this.friendModal(item)} style={{ fontWeight: "bold" }}>{item.userName}</p> : null
                                 })}
                                 {this.state.players.map((item) => {
-                                    return item.isBlue == true && item.isSpy == false ? <p>{item.userName}</p> : null
+                                    return item.isBlue == true && item.isSpy == false ? <p onClick={() => this.friendModal(item)}>{item.userName}</p> : null
                                 })}
                             </div>
                         </div>
@@ -368,7 +395,6 @@ export class Game extends Component {
                                 </div>
                             }
                         </div>
-
                         <div class="col-6">
                             <Chat />
                         </div>
@@ -403,13 +429,11 @@ export class Game extends Component {
                                         return index >= 20 && index < 25 ? <SpyCard card={item}></SpyCard> : null
                                     })}
                                 </CardDeck>
-                             </div>
+                            </div>
                         }
                     </div>
-
                     <div class="row">
-
-
+                        <PopUp show={this.state.show} onOk={this.modalOk} onCancel={this.modalCancel} friend={this.state.friend} />
                     </div>
                 </div>
             )

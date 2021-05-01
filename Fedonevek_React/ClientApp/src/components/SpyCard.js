@@ -1,6 +1,6 @@
 ﻿import React, { Component } from 'react';
 import { Card } from 'react-bootstrap';
-import './New.css';
+import './Styles.css';
 
 
 export class SpyCard extends Component {

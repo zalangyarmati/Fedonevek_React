@@ -1,6 +1,6 @@
 ﻿import React, { Component } from 'react';
 import { HubConnectionBuilder, LogLevel } from '@aspnet/signalr';
-import './New.css';
+import './Styles.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import authService from './api-authorization/AuthorizeService';
 
@@ -20,23 +20,17 @@ export class Chat extends Component {
     }
 
     componentDidMount = () => {
-
         this._subscription = authService.subscribe(() => this.getUserName());
         this.getUserName();
-
-
-        //const hubConnection = new HubConnection('https://localhost:5001/chat');
         const hubConnection = new HubConnectionBuilder()
             .withUrl("https://localhost:5001/chat")
             .configureLogging(LogLevel.Information)
             .build();
-
         this.setState({ hubConnection }, () => {
             this.state.hubConnection
                 .start()
                 .then(() => console.log('Connection started!'))
                 .catch(err => console.log('Error while establishing connection :('));
-
             this.state.hubConnection.on('sendToAll', (receivedMessage) => {
                 const text = ` ${receivedMessage}`;
                 this.setState({message: text})

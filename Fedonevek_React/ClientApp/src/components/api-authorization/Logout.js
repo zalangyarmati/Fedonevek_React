@@ -33,7 +33,7 @@ export class Logout extends Component {
                 this.processLogoutCallback();
                 break;
             case LogoutActions.LoggedOut:
-                this.setState({ isReady: true, message: "You successfully logged out!" });
+                this.setState({ isReady: true, message: "Sikeresen kijelentkeztel!" });
                 break;
             default:
                 throw new Error(`Invalid action '${action}'`);
@@ -82,7 +82,7 @@ export class Logout extends Component {
                     throw new Error("Invalid authentication result status.");
             }
         } else {
-            this.setState({ message: "You successfully logged out!" });
+            this.setState({ message: "Sikeresen kijelentkeztel!" });
         }
     }
 

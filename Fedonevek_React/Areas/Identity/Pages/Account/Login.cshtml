@@ -48,7 +48,7 @@
             <div class="form-group">
                 <div class="col-sm-3">
                     <label asp-for="Input.Password"></label>
-                </div>       
+                </div>
                 <input asp-for="Input.Password" class="form-control" />
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
             </div>
@@ -71,6 +71,18 @@
                 </p>
             </div>
         </form>
+        <div>
+            <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                <div>
+                    <p>
+                        @foreach (var provider in Model.ExternalLogins)
+                        {
+                            <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                        }
+                    </p>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
