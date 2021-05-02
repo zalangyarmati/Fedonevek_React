@@ -6,15 +6,12 @@ export class Emojis extends Component {
     static displayName = Emojis.name;
 
     emojiClicked = (code, emoji) => {
-        let emojiPic = jsemoji.replace_colons(`:${emoji.name}:`);
-
-        console.log("clicked emoji")
+        this.props.handleClick(emoji);
     }
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
     }
-
 
     render() {
         return (

@@ -4,7 +4,6 @@ import './Styles.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import authService from './api-authorization/AuthorizeService';
 import { Emojis }  from './Emojis.js'
-import  jsemoji from 'emoji-js'
 
 export class Chat extends Component {
     static displayName = Chat.name;
@@ -22,11 +21,9 @@ export class Chat extends Component {
         };
     }
 
-    emojiClicked = (code, emoji) => {
-        let emojiPic = jsemoji.replace_colons(`:${emoji.name}:`);
-        this.setState({ message: this.refs.newMessage.value + emojiPic });
-        this.refs.newMessage.value = this.state.message;
-        console.log("clicked emoji")
+    emojiClicked = (emoji) => {
+        var line = this.refs.newMessage.value;
+        this.refs.newMessage.value = line + emoji.emoji
     }
 
     componentDidMount = () => {
@@ -75,6 +72,8 @@ export class Chat extends Component {
         var cb = this.refs.chatBox;
         var max = Math.max(cb.scrollHeight, cb.clientHeight);
         cb.scrollTop = max - cb.clientHeight;
+
+        this.setPicker();
     }
 
     setPicker = () => {
