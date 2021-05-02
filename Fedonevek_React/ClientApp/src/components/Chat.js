@@ -3,6 +3,8 @@ import { HubConnectionBuilder, LogLevel } from '@aspnet/signalr';
 import './Styles.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import authService from './api-authorization/AuthorizeService';
+import { Emojis }  from './Emojis.js'
+import  jsemoji from 'emoji-js'
 
 export class Chat extends Component {
     static displayName = Chat.name;
@@ -15,8 +17,16 @@ export class Chat extends Component {
             message: '',
             messages: [],
             hubConnection: null,
-            username: ''
+            username: '',
+            pickerVisible: false
         };
+    }
+
+    emojiClicked = (code, emoji) => {
+        let emojiPic = jsemoji.replace_colons(`:${emoji.name}:`);
+        this.setState({ message: this.refs.newMessage.value + emojiPic });
+        this.refs.newMessage.value = this.state.message;
+        console.log("clicked emoji")
     }
 
     componentDidMount = () => {
@@ -67,14 +77,29 @@ export class Chat extends Component {
         cb.scrollTop = max - cb.clientHeight;
     }
 
+    setPicker = () => {
+        var current = this.state.pickerVisible
+        this.setState({ pickerVisible: !current })
+    }
+
     render() {
+
+        var pickerRender = this.state.pickerVisible;
         return (
             <div class="border">
+                {pickerRender &&
+                    <div class="picker">
+                        < Emojis handleClick={this.emojiClicked} />
+                    </div>
+                }
                 <div class="chatbox" ref="chatBox">{this.state.messages.map((m) => <div>{m}</div>)}</div>
                 <div class="d-flex">
+                    <div class="d-flex justify-content-center" onClick={this.setPicker} >&#128526;</div>
                     <input class="flex-grow-1" type="text" ref="newMessage"/>
                     <button onClick={this.messageSend}>Küldés</button>
                 </div>
+
+
             </div>
         );
     }

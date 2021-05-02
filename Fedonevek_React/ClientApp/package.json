@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "bootstrap": "^4.6.0",
+    "emoji-js": "^3.5.0",
+    "emoji-picker-react": "^3.4.4",
     "fireworks": "^2.2.7",
     "jquery": "^3.5.1",
     "merge": "^1.2.1",

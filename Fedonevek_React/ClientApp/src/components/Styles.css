@@ -39,7 +39,16 @@
 }
 
 .grad-blue {
-    background: linear-gradient(to bottom right, #00ccff 0%, #000066 100%);
+    background: linear-gradient(to bottom right, #00ccff 0%, #0000cc 100%);
+}
+
+.picker {
+    position: absolute;
+    z-index: 2000;
+    left: 20px;
+    top: -130px;
+    width: 100px;
+    height: 50px;
 }
 /*
 .btn {

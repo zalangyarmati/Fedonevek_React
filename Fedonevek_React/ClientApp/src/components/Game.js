@@ -365,7 +365,7 @@ export class Game extends Component {
                             </CardDeck>
                         </div>
                         <div class="col-sm-3 d-flex pb-3">
-                            <div class="card card-block card-fill bg-primary ">
+                            <div class="card card-block card-fill grad-blue ">
                                 <h1>{this.state.room.blueScore}</h1>
                                 {this.state.players.map((item) => {
                                     return item.isBlue == true && item.isSpy == true ? <p onClick={() => this.friendModal(item)} style={{ fontWeight: "bold" }}>{item.userName}</p> : null

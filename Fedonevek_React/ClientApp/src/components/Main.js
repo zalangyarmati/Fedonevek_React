@@ -150,7 +150,7 @@ export class Main extends Component {
                             </div>
                             <div class="card-body">
                                 {this.state.friends.map(function (item) {
-                                    return <div class="mt-2 d-flex justify-content-center text-white p-2" style={{ borderRadius: '12px', backgroundColor: '#DA70D6' }}>
+                                    return <div class="mt-2 d-flex justify-content-center text-white p-2 bg-info" style={{ borderRadius: '12px', backgroundColor: '#99ffcc' }}>
                                             {item.userName} 
                                            </div>
                                 })}
