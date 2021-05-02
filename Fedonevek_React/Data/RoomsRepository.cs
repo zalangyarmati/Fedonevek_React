@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Fedonevek_React.Data
 {
@@ -32,7 +31,7 @@ namespace Fedonevek_React.Data
             return new Player(value.ID, value.IsBlue, value.IsSpy, value.RoomId, value.UserId, value.UserName);
         }
 
-        private static Word ToWord(DbWord value) 
+        private static Word ToWord(DbWord value)
         {
             return new Word(value.ID, value.Keyword);
         }
@@ -45,7 +44,7 @@ namespace Fedonevek_React.Data
 
         public Room FindById(int id)
         {
-            var dbRoom =  db.Rooms.FirstOrDefault(r => r.ID == id);
+            var dbRoom = db.Rooms.FirstOrDefault(r => r.ID == id);
             if (dbRoom == null)
             {
                 return null;
@@ -69,7 +68,7 @@ namespace Fedonevek_React.Data
             while (intList.Count < 25)
             {
                 int number = rand.Next(0, wordList.Count());
-                if(intList.Contains(number) == false)
+                if (intList.Contains(number) == false)
                 {
                     intList.Add(number);
                 }
@@ -84,7 +83,7 @@ namespace Fedonevek_React.Data
             while (blueCount < 9)
             {
                 int number = rand.Next(0, 25);
-                if(colorList[number] == 0)
+                if (colorList[number] == 0)
                 {
                     colorList[number] = 1;
                     blueCount++;
@@ -110,7 +109,7 @@ namespace Fedonevek_React.Data
                     blackCount++;
                 }
             }
-            
+
 
 
             int position = 1;
@@ -134,7 +133,7 @@ namespace Fedonevek_React.Data
         public Room NewWord(NewWord value)
         {
             var dbRoom = db.Rooms.FirstOrDefault(r => r.ID == value.RoomID);
-            if(dbRoom == null)
+            if (dbRoom == null)
             {
                 return null;
             }
@@ -155,20 +154,20 @@ namespace Fedonevek_React.Data
         public void Finished(int roomId, bool blueWon)
         {
             var dbPlayers = db.Players.Where(p => p.RoomId == roomId).Select(ToPlayer).ToList();
-                foreach (Player p in dbPlayers)
+            foreach (Player p in dbPlayers)
+            {
+                var dbUser = db.Users.FirstOrDefault(u => u.Id == p.UserId);
+                if (p.IsBlue == blueWon)
                 {
-                    var dbUser = db.Users.FirstOrDefault(u => u.Id == p.UserId);
-                    if (p.IsBlue == blueWon)
-                    {
-                        dbUser.Point += 100;
-                    }
-                    if (p.IsBlue != blueWon)
-                    {
-                        dbUser.Point -= 100;
-                    }
-                    db.Users.Update(dbUser);
+                    dbUser.Point += 100;
                 }
-                db.SaveChanges();
+                if (p.IsBlue != blueWon)
+                {
+                    dbUser.Point -= 100;
+                }
+                db.Users.Update(dbUser);
+            }
+            db.SaveChanges();
         }
 
         public Room RevealOne(int cardId)
@@ -208,7 +207,7 @@ namespace Fedonevek_React.Data
                         dbRoom.RedScore -= 1;
                         dbRoom.CurrentNumber = 0;
                     }
-                    //Rossz helyre tippelt!
+
                     else if (dbCard.Color == 0 && dbRoom.CurrentNumber > 0)
                     {
                         dbCard.Revealed = true;
@@ -227,7 +226,7 @@ namespace Fedonevek_React.Data
                             dbRoom.BlueScore = 0;
                             dbRoom.Finished = true;
                         }
-                        
+
                     }
 
                     if (dbRoom.RedScore == 0)
@@ -287,7 +286,7 @@ namespace Fedonevek_React.Data
 
         public IReadOnlyCollection<Card> GetCards(int id)
         {
-            return db.Cards.Where(c => c.RoomId == id).Select(ToCard).ToList();            
+            return db.Cards.Where(c => c.RoomId == id).Select(ToCard).ToList();
         }
 
         public IReadOnlyCollection<Player> GetPlayers(int id)

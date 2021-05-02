@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Fedonevek_React.Data
+﻿namespace Fedonevek_React.Data
 {
     public class DbCard
     {

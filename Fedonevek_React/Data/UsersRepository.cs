@@ -1,7 +1,6 @@
 ﻿using Fedonevek_React.Data.DbContext;
 using Fedonevek_React.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,7 +26,7 @@ namespace Fedonevek_React.Data
         {
             var records = db.Friends.Where(f => (f.userOne == id || f.userTwo == id)).ToList();
             List<ApplicationUser> friends = new List<ApplicationUser>();
-            foreach(DbFriend f in records)
+            foreach (DbFriend f in records)
             {
                 var friendID = "";
                 if (f.userOne != id)
@@ -40,7 +39,7 @@ namespace Fedonevek_React.Data
                 friends.Add(friend);
             }
 
-            return (IReadOnlyCollection<ApplicationUser>) friends;
+            return (IReadOnlyCollection<ApplicationUser>)friends;
         }
 
         public DbFriend NewFriends(string id1, string id2)

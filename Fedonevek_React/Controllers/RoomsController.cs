@@ -4,10 +4,8 @@ using Fedonevek_React.Hubs;
 using Fedonevek_React.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Fedonevek_React.Controllers

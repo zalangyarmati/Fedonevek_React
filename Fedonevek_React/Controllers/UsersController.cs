@@ -2,9 +2,7 @@
 using Fedonevek_React.Data.DbContext;
 using Fedonevek_React.Models;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Fedonevek_React.Controllers
@@ -35,7 +33,7 @@ namespace Fedonevek_React.Controllers
         [HttpPost("friends/new/{id1}/{id2}")]
         public ActionResult<DbFriend> NewFriends(string id1, string id2)
         {
-            var friendsRecord =  repository.NewFriends(id1, id2);
+            var friendsRecord = repository.NewFriends(id1, id2);
             if (friendsRecord == null)
             {
                 return null;

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Fedonevek_React.Data
 {
@@ -24,5 +21,5 @@ namespace Fedonevek_React.Data
         public int BlueScore { get; set; }
         public int RedScore { get; set; }
     }
-    
+
 }
