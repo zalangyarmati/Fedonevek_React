@@ -73,7 +73,7 @@ export class Chat extends Component {
         var max = Math.max(cb.scrollHeight, cb.clientHeight);
         cb.scrollTop = max - cb.clientHeight;
 
-        this.setPicker();
+        this.setState({ pickerVisible: false })
     }
 
     setPicker = () => {

@@ -11,8 +11,15 @@ export class Button extends Component {
     }
 
     render() {
+        var wordLength = this.props.card.word.length
         let textsize
-        if (this.props.card.word.length > 6) {
+        if (wordLength > 10) {
+            textsize = "8px";
+        }
+        else if (wordLength > 9) {
+            textsize = "10px";
+        }
+        else if (wordLength > 6) {
             textsize = "12px";
         }
         else {
