@@ -116,7 +116,6 @@ namespace Fedonevek_React.Data
 
             if (colorList.Count == 25)
             {
-                //tranzakcióba
                 foreach (int number in intList)
                 {
                     var newCard = new DbCard { Position = position, Revealed = false, RoomId = newRecord.ID, Word = wordList[number].Keyword, Color = colorList[position - 1] };
