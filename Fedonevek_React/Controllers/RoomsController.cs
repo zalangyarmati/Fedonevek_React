@@ -99,7 +99,6 @@ namespace Fedonevek_React.Controllers
         }
 
 
-        //patch?
         [HttpPost("{id}/reveal")]
         public async Task<ActionResult<Room>> RevealAsync(int id)
         {

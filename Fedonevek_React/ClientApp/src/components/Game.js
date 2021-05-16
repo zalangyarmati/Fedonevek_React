@@ -87,7 +87,6 @@ export class Game extends Component {
                 let roomcopy = this.state.room;
                 roomcopy.started = true;
                 this.setState({ room: roomcopy })
-
             });
             this.state.hubConnection.on('newWord', (word, number) => {
                 let roomcopy = this.state.room;

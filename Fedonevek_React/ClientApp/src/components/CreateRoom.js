@@ -16,8 +16,6 @@ export class CreateRoom extends Component {
             headers: { 'Content-type': 'application/json' },
             body: JSON.stringify(data)
         });
-
-        console.log("XD");
     }
 
     render() {
