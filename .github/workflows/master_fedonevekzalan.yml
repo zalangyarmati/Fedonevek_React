@@ -11,7 +11,8 @@ on:
 jobs:
   build-and-deploy:
     runs-on: windows-latest
-
+    env:
+      CI: false
     steps:
     # checkout the repo
     - name: 'Checkout Github Action'
