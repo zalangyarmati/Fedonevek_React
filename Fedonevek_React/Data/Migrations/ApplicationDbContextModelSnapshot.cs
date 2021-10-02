@@ -146,6 +146,158 @@ namespace Fedonevek_React.Data.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Words");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 9991,
+                            Keyword = "ad"
+                        },
+                        new
+                        {
+                            ID = 9992,
+                            Keyword = "agy"
+                        },
+                        new
+                        {
+                            ID = 9993,
+                            Keyword = "alma"
+                        },
+                        new
+                        {
+                            ID = 9994,
+                            Keyword = "anya"
+                        },
+                        new
+                        {
+                            ID = 9995,
+                            Keyword = "apa"
+                        },
+                        new
+                        {
+                            ID = 9996,
+                            Keyword = "Anglia"
+                        },
+                        new
+                        {
+                            ID = 9997,
+                            Keyword = "angolna"
+                        },
+                        new
+                        {
+                            ID = 9998,
+                            Keyword = "acél"
+                        },
+                        new
+                        {
+                            ID = 9999,
+                            Keyword = "ács"
+                        },
+                        new
+                        {
+                            ID = 99910,
+                            Keyword = "áfa"
+                        },
+                        new
+                        {
+                            ID = 99911,
+                            Keyword = "ág"
+                        },
+                        new
+                        {
+                            ID = 99912,
+                            Keyword = "alga"
+                        },
+                        new
+                        {
+                            ID = 99913,
+                            Keyword = "állat"
+                        },
+                        new
+                        {
+                            ID = 99914,
+                            Keyword = "arany"
+                        },
+                        new
+                        {
+                            ID = 99915,
+                            Keyword = "ás"
+                        },
+                        new
+                        {
+                            ID = 99916,
+                            Keyword = "báb"
+                        },
+                        new
+                        {
+                            ID = 99917,
+                            Keyword = "barát"
+                        },
+                        new
+                        {
+                            ID = 99918,
+                            Keyword = "Budapest"
+                        },
+                        new
+                        {
+                            ID = 99919,
+                            Keyword = "bika"
+                        },
+                        new
+                        {
+                            ID = 99920,
+                            Keyword = "billiárd"
+                        },
+                        new
+                        {
+                            ID = 99921,
+                            Keyword = "bordó"
+                        },
+                        new
+                        {
+                            ID = 99922,
+                            Keyword = "bő"
+                        },
+                        new
+                        {
+                            ID = 99923,
+                            Keyword = "bánat"
+                        },
+                        new
+                        {
+                            ID = 99924,
+                            Keyword = "bűbáj"
+                        },
+                        new
+                        {
+                            ID = 99925,
+                            Keyword = "búvár"
+                        },
+                        new
+                        {
+                            ID = 99926,
+                            Keyword = "cián"
+                        },
+                        new
+                        {
+                            ID = 99927,
+                            Keyword = "cérna"
+                        },
+                        new
+                        {
+                            ID = 99928,
+                            Keyword = "ceruza"
+                        },
+                        new
+                        {
+                            ID = 99929,
+                            Keyword = "cukor"
+                        },
+                        new
+                        {
+                            ID = 99930,
+                            Keyword = "cucc"
+                        });
                 });
 
             modelBuilder.Entity("Fedonevek_React.Models.ApplicationUser", b =>

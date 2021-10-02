@@ -21,5 +21,12 @@ namespace Fedonevek_React.Data
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
         }
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<DbWord>().HasData(JsonLoader.LoadJson<DbWord>("./Data/Seed/DbWord"));
+        }
     }
 }

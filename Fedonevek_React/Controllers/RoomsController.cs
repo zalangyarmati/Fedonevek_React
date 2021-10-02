@@ -3,6 +3,7 @@ using Fedonevek_React.Data;
 using Fedonevek_React.Hubs;
 using Fedonevek_React.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -16,9 +17,11 @@ namespace Fedonevek_React.Controllers
     {
         protected readonly IHubContext<GameHub> _gameHub;
         private readonly IRoomsRepository repository;
+        private readonly LinkGenerator _generator;
 
-        public RoomsController(IRoomsRepository repository, [NotNull] IHubContext<GameHub> gameHub)
+        public RoomsController(IRoomsRepository repository, LinkGenerator generator, [NotNull] IHubContext<GameHub> gameHub)
         {
+            _generator = generator;
             _gameHub = gameHub;
             this.repository = repository;
         }
@@ -29,7 +32,7 @@ namespace Fedonevek_React.Controllers
             return repository.List();
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = nameof(Get))]
         public ActionResult<Room> Get(int id)
         {
             var value = repository.FindById(id);
@@ -43,7 +46,7 @@ namespace Fedonevek_React.Controllers
             }
         }
 
-        [HttpGet("{id}/cards")]
+        [HttpGet("{id}/cards", Name = nameof(GetCards))]
         public ActionResult<Card> GetCards(int id)
         {
             var value = repository.FindById(id);
@@ -58,7 +61,7 @@ namespace Fedonevek_React.Controllers
             }
         }
 
-        [HttpGet("{id}/players")]
+        [HttpGet("{id}/players", Name = nameof(GetPlayers))]
         public ActionResult<Card> GetPlayers(int id)
         {
             var value = repository.FindById(id);
