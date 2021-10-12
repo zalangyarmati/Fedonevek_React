@@ -92,6 +92,14 @@ namespace Fedonevek_React.Controllers
             return Ok(player);
         }
 
+        [HttpPost("side/robot/{roomid}/{userid}")]
+        public async Task<ActionResult<Room>> RobotSide([FromBody] PlayerSide value, int roomid, string userid)
+        {
+            var room = repository.RobotSide(roomid, value);
+            await _gameHub.Clients.All.SendAsync("robotside", value, roomid, userid);
+            return Ok(room);
+        }
+
         [HttpPost("{id}")]
         public async Task<ActionResult<Room>> NewWord([FromBody] NewWord value)
         {
@@ -101,12 +109,52 @@ namespace Fedonevek_React.Controllers
             return Ok(modified);
         }
 
+        [HttpPost("{id}/pass")]
+        public async Task<ActionResult<Room>> Pass(int id)
+        {
+            var modified = repository.Pass(id);
+            
+            if (repository.CheckRobotTurn(id))
+            {
+                MI.NewWord minw = new MI.NewWord();
+                if (!modified.BluesTurn)
+                {
+                    minw = repository.BlueSpyGenerate(id);
+                }
+                else 
+                {
+                    minw = repository.RedSpyGenerate(id);        
+                }
+                NewWord nw = new NewWord(id, minw.Word, minw.Number);
+                NewWord(nw);
+            }
+            else
+            {
+                await _gameHub.Clients.All.SendAsync("reveal", id, modified.BlueScore, modified.RedScore, modified.CurrentNumber, modified.Finished);
+            }      
+            return Ok(modified);
+        }
+
 
         [HttpPost("{id}/reveal")]
         public async Task<ActionResult<Room>> RevealAsync(int id)
         {
             var modified = repository.RevealOne(id);
             await _gameHub.Clients.All.SendAsync("reveal", id, modified.BlueScore, modified.RedScore, modified.CurrentNumber, modified.Finished);
+            if (repository.CheckRobotTurn(modified.ID))
+            {
+                MI.NewWord minw = new MI.NewWord();
+                if (!modified.BluesTurn)
+                {
+                    minw = repository.BlueSpyGenerate(modified.ID);
+                }
+                else 
+                {
+                    minw = repository.RedSpyGenerate(modified.ID);        
+                }
+                NewWord nw = new NewWord(modified.ID, minw.Word, minw.Number);
+                NewWord(nw);
+            }
             return Ok(modified);
         }
 
@@ -124,6 +172,7 @@ namespace Fedonevek_React.Controllers
             await _gameHub.Clients.All.SendAsync("start");
             return Ok(modified);
         }
+
 
     }
 }

@@ -1,5 +1,5 @@
 ﻿import React, { Component } from 'react';
-import { Card, CardDeck } from 'react-bootstrap';
+import { Card, CardDeck, CloseButton } from 'react-bootstrap';
 import { HubConnectionBuilder, LogLevel } from '@aspnet/signalr';
 import './Styles.css';
 import { Button } from './Button';
@@ -8,6 +8,7 @@ import { SpyCard } from './SpyCard';
 import { PopUp } from './PopUp';
 import authService from './api-authorization/AuthorizeService';
 import fx from 'fireworks';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 export class Game extends Component {
@@ -25,14 +26,21 @@ export class Game extends Component {
                 { isBlue: false, isSpy: false },
             cards: [],
             players: [],
+            redSpyRobot: false,
+            blueSpyRobot: false,
+            redPlayerRobot: false,
+            bluePlayerRobot: false,
+            robotSide:
+                { isBlue: false, isSpy: false },
             firework: false,
             intervalID: 0,
             show: false,
             friend:
-                { userId: "", userName: ""}
+                { userId: "", userName: "" }
         }
 
         this.cardClicked = this.cardClicked.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
     }
 
     async componentDidMount() {
@@ -95,6 +103,23 @@ export class Game extends Component {
                 roomcopy.bluesTurn = !roomcopy.bluesTurn;
                 this.setState({ room: roomcopy })
             });
+            this.state.hubConnection.on('robotside', (side, roomid, userid) =>{
+                if (this.state.room.id == roomid && this.state.userid != userid){
+                    if (side.isBlue && side.isSpy){
+                        this.setState({blueSpyRobot: !this.state.blueSpyRobot})
+                    }
+                    else if (side.isBlue && !side.isSpy){
+                        this.setState({bluePlayerRobot: !this.state.bluePlayerRobot})
+                    }
+                    else if (!side.isBlue && side.isSpy){
+                        this.setState({redSpyRobot: !this.state.redSpyRobot})
+                    }
+                    else if (!side.isBlue && !side.isSpy){
+                        this.setState({redPlayerRobot: !this.state.redPlayerRobot})
+                    }
+
+                }
+            })
         });
     }
 
@@ -106,7 +131,17 @@ export class Game extends Component {
     async getRoom(id) {
         await fetch(`${this.state.url}${id}`)
             .then(response => response.json())
-            .then(response => this.setState({ room: response }))
+            .then(response => {
+                this.setState(
+                    {
+                        room: response,
+                        bluePlayerRobot: response.bluePlayerRobot,
+                        blueSpyRobot: response.blueSpyRobot,
+                        redPlayerRobot: response.redPlayerRobot,
+                        redSpyRobot: response.redSpyRobot
+                    })
+            })
+
     }
 
     async getCards(id) {
@@ -146,6 +181,19 @@ export class Game extends Component {
             }
         })
 
+        if (this.state.bluePlayerRobot){
+            hasBlue = true;
+        }
+        if (this.state.blueSpyRobot){
+            hasBluespy = true;
+        }
+        if (this.state.redPlayerRobot){
+            hasRed = true;
+        }
+        if (this.state.redSpyRobot){
+            hasRedspy = true;
+        }
+
         if (hasRed && hasBlue && hasRedspy && hasBluespy) {
             var roomid = this.state.room.id;
             fetch(`https://localhost:5001/api/rooms/${roomid}/start`, {
@@ -172,6 +220,51 @@ export class Game extends Component {
         });
     }
 
+    async handleInputChange(event) {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
+
+        console.log(this.state.name)
+        await this.setState({
+            [name]: value
+        });
+
+        var robotIsBlue;
+        var robotIsSpy;
+        var copy = this.state.robotSide;
+
+        if (name == "redSpyRobot") {
+            robotIsBlue = false;
+            robotIsSpy = true;
+        }
+        else if (name == "blueSpyRobot") {
+            robotIsBlue = true;
+            robotIsSpy = true;
+        }
+        else if (name == "redPlayerRobot") {
+            robotIsBlue = false;
+            robotIsSpy = false;
+        }
+        else if (name == "bluePlayerRobot") {
+            robotIsBlue = true;
+            robotIsSpy = false;
+        }
+        copy.isBlue = robotIsBlue;
+        copy.isSpy = robotIsSpy;
+        this.setState({ robotSide: copy })
+
+        var roomid = this.state.room.id;
+        fetch(`https://localhost:5001/api/rooms/side/robot/${roomid}/${this.state.userid}`, {
+            method: 'POST',
+            headers: { 'Content-type': 'application/json' },
+            //body: JSON.stringify(this.state.robotSide)
+            body: JSON.stringify(this.state.robotSide)
+        });
+
+        console.log(`robot clicked${this.state.redSpyRobot}`);
+    }
+
     cardClicked(id) {
         if (!this.state.room.finished && this.state.room.currentNumber > 0) {
             var player;
@@ -195,6 +288,23 @@ export class Game extends Component {
                     }
                 })
             }
+        }
+    }
+
+    pass = () => {
+        var player;
+        this.state.players.map((item) => {
+            if (item.userId == this.state.userid) {
+                player = item;
+            }
+        })
+        var bluesTurn = this.state.room.bluesTurn
+
+        if ((!player.isSpy && this.state.room.currentNumber != 0 && player.isBlue && bluesTurn) || (!player.isSpy && this.state.room.currentNumber != 0 && !player.isBlue && !bluesTurn)) {
+            fetch(`https://localhost:5001/api/rooms/${this.state.room.id}/pass`, {
+                method: 'POST',
+                headers: { 'Content-type': 'application/json' }
+            });
         }
     }
 
@@ -382,6 +492,7 @@ export class Game extends Component {
                                 <div>
                                     <Card style={{ backgroundColor: wordColor }}>{this.state.room.currentWord}</Card>
                                     <Card style={{ backgroundColor: wordColor }}>{this.state.room.currentNumber}</Card>
+                                    <Card style={{ backgroundColor: wordColor }} onClick={this.pass}>Passz</Card>
                                 </div>
                             }
                             {spyRender &&
@@ -441,43 +552,103 @@ export class Game extends Component {
             <div class="container">
                 <div class="row">
                     <div class="col-sm-3 d-flex pb-3">
-                        <div class="card card-block card-fill grad-red" onClick={() => this.changeSide(false, false)} >
-                            <h1>Piros játékosok</h1>
-                            {this.state.players.map((item) => {
-                                return item.isBlue == false && item.isSpy == false ? <p>{item.userName}</p> : null
-                            })}
+                        <div class="card card-block card-fill grad-red">
+                            <div onClick={() => this.changeSide(false, false)} >
+                                <h1>Piros játékosok</h1>
+                                {this.state.players.map((item) => {
+                                    return !this.state.redPlayerRobot && item.isBlue == false && item.isSpy == false ? <p>{item.userName}</p> : null
+                                })}
+                                {this.state.redPlayerRobot && <p>ROBOT</p>}   
+                            </div>
+                            <br />
+                            <div>
+                                <input
+                                    type="checkbox"
+                                    name="redPlayerRobot"
+                                    value={this.state.redPlayerRobot}
+                                    checked={this.state.redPlayerRobot}
+                                    onChange={this.handleInputChange}
+                                    ref="complete"
+                                />
+                                <label>Robot</label>
+                            </div>
                         </div>
                     </div>
                     <div class="col-6">
 
                     </div>
                     <div class="col-sm-3 d-flex pb-3">
-                        <div class="card card-block card-fill grad-blue" onClick={() => this.changeSide(true, false)} >
-                            <h1>Kék játékosok</h1>
-                            {this.state.players.map((item) => {
-                                return item.isBlue == true && item.isSpy == false ? <p>{item.userName}</p> : null
-                            })}
+                        <div class="card card-block card-fill grad-blue">
+                            <div onClick={() => this.changeSide(true, false)}>
+                                <h1>Kék játékosok</h1>
+                                {this.state.players.map((item) => {
+                                    return !this.state.bluePlayerRobot && item.isBlue == true && item.isSpy == false ? <p>{item.userName}</p> : null
+                                })}
+                                {this.state.bluePlayerRobot && <p>ROBOT</p>}             
+                            </div>
+                            <br />
+                            <div>
+                                <input
+                                    type="checkbox"
+                                    name="bluePlayerRobot"
+                                    value={this.state.bluePlayerRobot}
+                                    checked={this.state.bluePlayerRobot}
+                                    onChange={this.handleInputChange}
+                                    ref="complete"
+                                />
+                                <label>Robot</label>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-3 d-flex pb-3">
-                        <div class="card card-block card-fill grad-red" onClick={() => this.changeSide(false, true)}>
-                            <h1>Kém</h1>
-                            {this.state.players.map((item) => {
-                                return item.isBlue == false && item.isSpy == true ? <p>{item.userName}</p> : null
-                            })}
+                        <div class="card card-block card-fill grad-red">
+                            <div onClick={() => this.changeSide(false, true)}>
+                                <h1>Kém</h1>
+                                {this.state.players.map((item) => {
+                                    return !this.state.redSpyRobot && item.isBlue == false && item.isSpy == true ? <p>{item.userName}</p> : null
+                                })}
+                                {this.state.redSpyRobot && <p>ROBOT</p>}
+                            </div>
+                            <br />
+                            <div>
+                                <input
+                                    type="checkbox"
+                                    name="redSpyRobot"
+                                    value={this.state.redSpyRobot}
+                                    checked={this.state.redSpyRobot}
+                                    onChange={this.handleInputChange}
+                                    ref="complete"
+                                />
+                                <label>Robot</label>
+                            </div>
                         </div>
                     </div>
                     <div class="col-6 d-flex justify-content-center">
                         <button type="button" class="btn grad-green" onClick={() => this.startGame()}>Játék indítása</button>
                     </div>
                     <div class="col-sm-3 d-flex pb-3">
-                        <div class="card card-block card-fill grad-blue" onClick={() => this.changeSide(true, true)} >
-                            <h1>Kém</h1>
-                            {this.state.players.map((item) => {
-                                return item.isBlue == true && item.isSpy == true ? <p>{item.userName}</p> : null
-                            })}
+                        <div class="card card-block card-fill grad-blue" >
+                            <div onClick={() => this.changeSide(true, true)}>
+                                <h1>Kém</h1>
+                                {this.state.players.map((item) => {
+                                    return !this.state.blueSpyRobot && item.isBlue == true && item.isSpy == true ? <p>{item.userName}</p> : null
+                                })}
+                                {this.state.blueSpyRobot && <p>ROBOT</p>}
+                            </div>
+                            <br />
+                            <div>
+                                <input
+                                    type="checkbox"
+                                    name="blueSpyRobot"
+                                    value={this.state.blueSpyRobot}
+                                    checked={this.state.blueSpyRobot}
+                                    onChange={this.handleInputChange}
+                                    ref="complete"
+                                />
+                                <label>Robot</label>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -18,7 +18,7 @@ namespace Fedonevek_React.Data
 
         private static Room ToModel(DbRoom value)
         {
-            return new Room(value.ID, value.Name, value.CurrentWord, value.CurrentNumber, value.BluesTurn, value.Finished, value.Started, value.BlueScore, value.RedScore);
+            return new Room(value.ID, value.Name, value.CurrentWord, value.CurrentNumber, value.BluesTurn, value.Finished, value.Started, value.BlueScore, value.RedScore, value.BluePlayerRobot, value.BlueSpyRobot, value.RedPlayerRobot, value.RedSpyRobot);
         }
 
 
@@ -61,7 +61,10 @@ namespace Fedonevek_React.Data
             db.Rooms.Add(newRecord);
             db.SaveChanges();
 
-            var wordList = db.Words.Select(ToWord).ToList();
+            //********************
+            var wordList = MI_Test.Program.getWordList("dataset.xml");
+            var elso = wordList[0];
+            //var wordList = db.Words.Select(ToWord).ToList();
 
             var rand = new Random();
             List<int> intList = new List<int>();
@@ -118,7 +121,7 @@ namespace Fedonevek_React.Data
             {
                 foreach (int number in intList)
                 {
-                    var newCard = new DbCard { Position = position, Revealed = false, RoomId = newRecord.ID, Word = wordList[number].Keyword, Color = colorList[position - 1] };
+                    var newCard = new DbCard { Position = position, Revealed = false, RoomId = newRecord.ID, Word = wordList[number], Color = colorList[position - 1] };
                     db.Cards.Add(newCard);
                     db.SaveChanges();
                     position++;
@@ -150,6 +153,27 @@ namespace Fedonevek_React.Data
             }
         }
 
+        //ezután*******************************
+        public Room Pass(int roomid)
+        {
+            var dbRoom = db.Rooms.FirstOrDefault(r => r.ID == roomid);
+            if (dbRoom == null)
+            {
+                return null;
+            }
+            else
+            {
+                using (var tran = db.Database.BeginTransaction(System.Data.IsolationLevel.RepeatableRead))
+                {
+                    dbRoom.CurrentNumber = 0;
+                    db.Rooms.Update(dbRoom);
+                    db.SaveChanges();
+                    tran.Commit();
+                    return ToModel(dbRoom);
+                }
+            }
+        }
+
         public void Finished(int roomId, bool blueWon)
         {
             var dbPlayers = db.Players.Where(p => p.RoomId == roomId).Select(ToPlayer).ToList();
@@ -169,6 +193,7 @@ namespace Fedonevek_React.Data
             db.SaveChanges();
         }
 
+        //ezután*******************************
         public Room RevealOne(int cardId)
         {
             var dbCard = db.Cards.FirstOrDefault(c => c.ID == cardId);
@@ -314,6 +339,84 @@ namespace Fedonevek_React.Data
             }
         }
 
+        public Room RobotSide(int roomid, PlayerSide side)
+        {
+            var dbRoom = db.Rooms.FirstOrDefault(r => r.ID == roomid);
+            if (dbRoom != null)
+            {
+                if (side.IsBlue && side.IsSpy)
+                {
+                    dbRoom.BlueSpyRobot = !dbRoom.BlueSpyRobot;
+                }
+                if (side.IsBlue && !side.IsSpy)
+                {
+                    dbRoom.BluePlayerRobot = !dbRoom.BluePlayerRobot;
+                }
+                if (!side.IsBlue && side.IsSpy)
+                {
+                    dbRoom.RedSpyRobot = !dbRoom.RedSpyRobot;
+                }
+                if (!side.IsBlue && !side.IsSpy)
+                {
+                    dbRoom.RedPlayerRobot = !dbRoom.RedPlayerRobot;
+                }
+                db.Rooms.Update(dbRoom);
+                db.SaveChanges();
+                return ToModel(dbRoom);
+            }
+            else
+            {
+                return null;
+            }
+        }
 
+        public bool CheckRobotTurn(int roomid)
+        {
+            var dbRoom = FindById(roomid);
+            if (dbRoom.CurrentNumber == 0 && ((!dbRoom.BluesTurn && dbRoom.BlueSpyRobot) || dbRoom.BluesTurn && dbRoom.RedSpyRobot))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public MI.NewWord BlueSpyGenerate(int roomid)
+        {
+            var cards = GetCards(roomid);
+            var blueCards = cards.Where(c => c.Color == 1 && !c.Revealed);
+            var blueWords = new List<string>();
+            foreach (var bc in blueCards)
+            {
+                blueWords.Add(bc.Word);
+            }
+            var redCards = cards.Where(c => c.Color > 1 && !c.Revealed);
+            var redWords = new List<string>();
+            foreach (var rc in redCards)
+            {
+                redWords.Add(rc.Word);
+            }
+            return MI_Test.Program.NewWord(blueWords, redWords);
+        }
+
+        public MI.NewWord RedSpyGenerate(int roomid)
+        {
+            var cards = GetCards(roomid);
+            var blueCards = cards.Where(c => (c.Color == 1 || c.Color == 3) && !c.Revealed);
+            var blueWords = new List<string>();
+            foreach (var bc in blueCards)
+            {
+                blueWords.Add(bc.Word);
+            }
+            var redCards = cards.Where(c => c.Color == 2 && !c.Revealed);
+            var redWords = new List<string>();
+            foreach (var rc in redCards)
+            {
+                redWords.Add(rc.Word);
+            }
+            return MI_Test.Program.NewWord(redWords, blueWords);
+        }
     }
 }

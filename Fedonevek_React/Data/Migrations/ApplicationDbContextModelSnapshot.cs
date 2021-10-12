@@ -104,8 +104,14 @@ namespace Fedonevek_React.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("BluePlayerRobot")
+                        .HasColumnType("bit");
+
                     b.Property<int>("BlueScore")
                         .HasColumnType("int");
+
+                    b.Property<bool>("BlueSpyRobot")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("BluesTurn")
                         .HasColumnType("bit");
@@ -122,8 +128,14 @@ namespace Fedonevek_React.Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("RedPlayerRobot")
+                        .HasColumnType("bit");
+
                     b.Property<int>("RedScore")
                         .HasColumnType("int");
+
+                    b.Property<bool>("RedSpyRobot")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("Started")
                         .HasColumnType("bit");

@@ -20,6 +20,11 @@ namespace Fedonevek_React.Data
 
         public int BlueScore { get; set; }
         public int RedScore { get; set; }
+
+        public bool BluePlayerRobot { get; set; }
+        public bool BlueSpyRobot { get; set; }
+        public bool RedPlayerRobot { get; set; }
+        public bool RedSpyRobot { get; set; }
     }
 
 }

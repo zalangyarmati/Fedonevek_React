@@ -30,7 +30,7 @@ export class Button extends Component {
         if (this.props.card.color == "0" && this.props.card.revealed == 1) {
             color = "#a9a9a9"
         }
-        else if (this.props.card.color == "1" && this.props.card.revealed == 1){
+        else if (this.props.card.color == "1" && this.props.card.revealed == 1) {
             color = "#0275d8"
         }
         else if (this.props.card.color == "2" && this.props.card.revealed == 1) {
@@ -40,7 +40,7 @@ export class Button extends Component {
             color = "#000000";
         }
         return (
-            <Card class="btn card d-flex justify-content-center" style={{ backgroundColor: color, fontSize: textsize}} onClick={() => this.props.handleClick(this.props.card.id)}>
+            <Card class="btn card d-flex justify-content-center" style={{ backgroundColor: color, fontSize: textsize }} onClick={() => this.props.handleClick(this.props.card.id)}>
                 {this.props.card.word}
             </Card>)
     }

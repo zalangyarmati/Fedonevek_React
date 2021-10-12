@@ -1,5 +1,5 @@
 ﻿import React, { Component } from 'react';
-import  Picker  from 'emoji-picker-react';
+import Picker from 'emoji-picker-react';
 import jsemoji from 'emoji-js'
 
 export class Emojis extends Component {

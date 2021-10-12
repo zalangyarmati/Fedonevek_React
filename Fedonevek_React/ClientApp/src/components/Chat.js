@@ -3,7 +3,7 @@ import { HubConnectionBuilder, LogLevel } from '@aspnet/signalr';
 import './Styles.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import authService from './api-authorization/AuthorizeService';
-import { Emojis }  from './Emojis.js'
+import { Emojis } from './Emojis.js'
 
 export class Chat extends Component {
     static displayName = Chat.name;
@@ -40,7 +40,7 @@ export class Chat extends Component {
                 .catch(err => console.log('Error while establishing connection :('));
             this.state.hubConnection.on('sendToAll', (receivedMessage) => {
                 const text = ` ${receivedMessage}`;
-                this.setState({message: text})
+                this.setState({ message: text })
                 const messages = this.state.messages.concat([text]);
                 this.setState({ messages });
             });
@@ -94,7 +94,7 @@ export class Chat extends Component {
                 <div class="chatbox" ref="chatBox">{this.state.messages.map((m) => <div>{m}</div>)}</div>
                 <div class="d-flex">
                     <div class="d-flex justify-content-center" onClick={this.setPicker} >&#128526;</div>
-                    <input class="flex-grow-1" type="text" ref="newMessage"/>
+                    <input class="flex-grow-1" type="text" ref="newMessage" />
                     <button onClick={this.messageSend}>Küldés</button>
                 </div>
 
