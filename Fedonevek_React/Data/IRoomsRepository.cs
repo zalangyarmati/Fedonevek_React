@@ -18,7 +18,9 @@ namespace Fedonevek_React.Data
         IReadOnlyCollection<Player> GetPlayers(int id);
         Player ChooseSide(PlayerSide value, int roomid, string userid);
         Room RobotSide(int roomid, PlayerSide side);
-        bool CheckRobotTurn(int roomid);
+        bool IsSpyRobotNext(int roomid);
+        bool IsPlayerRobotNext(int roomid);
+        int? PlayerRobotGuess(int roomid);
         MI.NewWord BlueSpyGenerate(int roomid);
         MI.NewWord RedSpyGenerate(int roomid);
 

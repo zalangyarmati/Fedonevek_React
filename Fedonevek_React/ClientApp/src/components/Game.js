@@ -9,6 +9,8 @@ import { PopUp } from './PopUp';
 import authService from './api-authorization/AuthorizeService';
 import fx from 'fireworks';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import robot from '../images/robot.png';
+import cloud from '../images/cloud.png';
 
 
 export class Game extends Component {
@@ -27,9 +29,13 @@ export class Game extends Component {
             cards: [],
             players: [],
             redSpyRobot: false,
+            redSpyThinking: false,
             blueSpyRobot: false,
+            blueSpyThinking: false,
             redPlayerRobot: false,
+            redPlayerThinking: false,
             bluePlayerRobot: false,
+            bluePlayerThinking: false,
             robotSide:
                 { isBlue: false, isSpy: false },
             firework: false,
@@ -64,10 +70,22 @@ export class Game extends Component {
                 .then(() => console.log('GameHub Connection started!'))
                 .catch(err => console.log('Error while establishing connection :('));
 
-            this.state.hubConnection.on('reveal', (cardId, bluepoint, redpoint, current, finished) => {
+            this.state.hubConnection.on('reveal', async (cardId, bluepoint, redpoint, current, finished) => {
                 const id = cardId;
 
                 let roomcopy = this.state.room;
+                
+                if(roomcopy.bluesTurn && roomcopy.bluePlayerRobot){
+                    this.setState({bluePlayerThinking: true});
+                    await this.delay(5000);
+                    this.setState({bluePlayerThinking: false});
+                }
+                if(!roomcopy.bluesTurn && roomcopy.redPlayerRobot){
+                    this.setState({redPlayerThinking: true});
+                    await this.delay(5000);
+                    this.setState({redPlayerThinking: false});
+                }
+
                 let cardscopy = this.state.cards;
                 cardscopy.map((item) => {
                     if (item.id == id) {
@@ -91,13 +109,22 @@ export class Game extends Component {
             this.state.hubConnection.on('changeside', async () => {
                 this.getPlayers(id);
             });
-            this.state.hubConnection.on('start', () => {
-                let roomcopy = this.state.room;
-                roomcopy.started = true;
-                this.setState({ room: roomcopy })
+            this.state.hubConnection.on('start', (mod_room) => {
+                this.setState({ room: mod_room })
             });
-            this.state.hubConnection.on('newWord', (word, number) => {
+            this.state.hubConnection.on('newWord', async (word, number) => {
                 let roomcopy = this.state.room;
+                
+                if(!roomcopy.bluesTurn && roomcopy.blueSpyRobot){
+                    this.setState({blueSpyThinking: true});
+                    await this.delay(5000);
+                    this.setState({blueSpyThinking: false});
+                }
+                if(roomcopy.bluesTurn && roomcopy.redSpyRobot){
+                    this.setState({redSpyThinking: true});
+                    await this.delay(5000);
+                    this.setState({redSpyThinking: false});
+                }
                 roomcopy.currentWord = word;
                 roomcopy.currentNumber = number;
                 roomcopy.bluesTurn = !roomcopy.bluesTurn;
@@ -127,6 +154,8 @@ export class Game extends Component {
         authService.unsubscribe(this._subscription);
         clearInterval(this.state.intervalID);
     }
+
+    delay = ms => new Promise(res => setTimeout(res, ms));
 
     async getRoom(id) {
         await fetch(`${this.state.url}${id}`)
@@ -436,14 +465,30 @@ export class Game extends Component {
                 <div class="container">
                     <div class="row">
                         <div class="col-sm-3 d-flex pb-3">
-                            <div class="card card-block card-fill  grad-red">
+                            <div class="card centered card-block card-fill  grad-red">
                                 <h1>{this.state.room.redScore}</h1>
                                 {this.state.players.map((item) => {
-                                    return item.isBlue == false && item.isSpy == true ? <p onClick={() => this.friendModal(item)} style={{ fontWeight: "bold" }}>{item.userName}</p> : null
+                                    return !this.state.room.redSpyRobot && item.isBlue == false && item.isSpy == true ? <p onClick={() => this.friendModal(item)} style={{ fontWeight: "bold" }}>{item.userName}</p> : null
                                 })}
+                                {this.state.room.redSpyRobot &&
+                                    <div class="row">
+                                        <img src={robot} alt="Robot" height={70} width={70}/>
+                                        {this.state.redSpyThinking && 
+                                            <img class="cloud" src={cloud} alt="Cloud" height={70} width={70}/>
+                                        }
+                                    </div>
+                                }
                                 {this.state.players.map((item) => {
                                     return item.isBlue == false && item.isSpy == false ? <p onClick={() => this.friendModal(item)}>{item.userName}</p> : null
                                 })}
+                                {this.state.room.redPlayerRobot &&
+                                    <div class="row">
+                                        <img src={robot} alt="Robot" height={70} width={70}/>
+                                        {this.state.redPlayerThinking && 
+                                            <img class="cloud" src={cloud} alt="Cloud" height={70} width={70}/>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                         <div class="col-6">
@@ -474,14 +519,30 @@ export class Game extends Component {
                             </CardDeck>
                         </div>
                         <div class="col-sm-3 d-flex pb-3">
-                            <div class="card card-block card-fill grad-blue ">
+                            <div class="card centered card-block card-fill grad-blue ">
                                 <h1>{this.state.room.blueScore}</h1>
                                 {this.state.players.map((item) => {
-                                    return item.isBlue == true && item.isSpy == true ? <p onClick={() => this.friendModal(item)} style={{ fontWeight: "bold" }}>{item.userName}</p> : null
+                                    return !this.state.room.blueSpyRobot && item.isBlue == true && item.isSpy == true ? <p onClick={() => this.friendModal(item)} style={{ fontWeight: "bold" }}>{item.userName}</p> : null
                                 })}
+                                {this.state.room.blueSpyRobot &&
+                                    <div class="row">
+                                        <img src={robot} alt="Robot" height={70} width={70}/>
+                                        {this.state.blueSpyThinking && 
+                                            <img class="cloud" src={cloud} alt="Cloud" height={70} width={70}/>
+                                        }
+                                    </div>
+                                }
                                 {this.state.players.map((item) => {
                                     return item.isBlue == true && item.isSpy == false ? <p onClick={() => this.friendModal(item)}>{item.userName}</p> : null
                                 })}
+                                {this.state.room.bluePlayerRobot &&
+                                    <div class="row">
+                                        <img src={robot} alt="Robot" height={70} width={70}/>
+                                        {this.state.bluePlayerThinking && 
+                                            <img class="cloud" src={cloud} alt="Cloud" height={70} width={70}/>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -558,7 +619,7 @@ export class Game extends Component {
                                 {this.state.players.map((item) => {
                                     return !this.state.redPlayerRobot && item.isBlue == false && item.isSpy == false ? <p>{item.userName}</p> : null
                                 })}
-                                {this.state.redPlayerRobot && <p>ROBOT</p>}   
+                                {this.state.redPlayerRobot && <img src={robot} alt="Robot" height={70} width={70}/>}   
                             </div>
                             <br />
                             <div>
@@ -584,7 +645,7 @@ export class Game extends Component {
                                 {this.state.players.map((item) => {
                                     return !this.state.bluePlayerRobot && item.isBlue == true && item.isSpy == false ? <p>{item.userName}</p> : null
                                 })}
-                                {this.state.bluePlayerRobot && <p>ROBOT</p>}             
+                                {this.state.bluePlayerRobot && <img src={robot} alt="Robot" height={70} width={70}/>}             
                             </div>
                             <br />
                             <div>
@@ -609,7 +670,7 @@ export class Game extends Component {
                                 {this.state.players.map((item) => {
                                     return !this.state.redSpyRobot && item.isBlue == false && item.isSpy == true ? <p>{item.userName}</p> : null
                                 })}
-                                {this.state.redSpyRobot && <p>ROBOT</p>}
+                                {this.state.redSpyRobot && <img src={robot} alt="Robot" height={70} width={70}/>}
                             </div>
                             <br />
                             <div>
@@ -635,7 +696,7 @@ export class Game extends Component {
                                 {this.state.players.map((item) => {
                                     return !this.state.blueSpyRobot && item.isBlue == true && item.isSpy == true ? <p>{item.userName}</p> : null
                                 })}
-                                {this.state.blueSpyRobot && <p>ROBOT</p>}
+                                {this.state.blueSpyRobot && <img src={robot} alt="Robot" height={70} width={70}/>}
                             </div>
                             <br />
                             <div>

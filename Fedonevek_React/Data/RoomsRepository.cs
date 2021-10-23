@@ -370,7 +370,7 @@ namespace Fedonevek_React.Data
             }
         }
 
-        public bool CheckRobotTurn(int roomid)
+        public bool IsSpyRobotNext(int roomid)
         {
             var dbRoom = FindById(roomid);
             if (dbRoom.CurrentNumber == 0 && ((!dbRoom.BluesTurn && dbRoom.BlueSpyRobot) || dbRoom.BluesTurn && dbRoom.RedSpyRobot))
@@ -380,6 +380,44 @@ namespace Fedonevek_React.Data
             else
             {
                 return false;
+            }
+        }
+
+        public bool IsPlayerRobotNext(int roomid)
+        {
+            var dbRoom = FindById(roomid);
+            if (dbRoom.CurrentNumber > 0 && ((dbRoom.BluesTurn && dbRoom.BluePlayerRobot) || !dbRoom.BluesTurn && dbRoom.RedPlayerRobot))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public int? PlayerRobotGuess(int roomid){
+            var dbRoom = FindById(roomid);
+            var cards = GetCards(roomid).Where(c => !c.Revealed);
+            List<string> words = new List<string>();
+            foreach(Card c in cards){
+                words.Add(c.Word);
+            }
+            List<MI.Association> list = MI_Test.Program.Guess(words, dbRoom.CurrentWord, dbRoom.CurrentNumber);
+            if (list.Count() == 0)
+            {
+                return null;
+            }
+            else
+            {
+                int id = 0;
+                var tipp = list.First();
+                foreach(Card c in cards){
+                    if (c.Word == tipp.Card){
+                        id = c.ID;
+                    }
+                }
+                return id;
             }
         }
 

@@ -355,7 +355,7 @@ namespace MI_Test
 
         public static List<MI.Association> Guess(IEnumerable<string> cards, string clueWord, int count)
         {
-            var DataSet = DeserializeToObject<MI.DataSet>("../../../dataset.xml");
+            var DataSet = DeserializeToObject<MI.DataSet>("dataset.xml");
             List<MI.Association> associations = new List<MI.Association>();
 
             var cardsOnTale = DataSet.Stimuli.Where(s => cards.Contains(s.Word));
@@ -378,7 +378,7 @@ namespace MI_Test
             }
 
 
-            var clueStimulus = DataSet.Stimuli.Where(s => s.Word == clueWord).FirstOrDefault();
+            var clueStimulus = DataSet.Stimuli.Where(s => s.Word == clueWord.ToUpper()).FirstOrDefault();
             foreach (MI.Target t in clueStimulus.Targets)
             {
 
@@ -541,7 +541,6 @@ namespace MI_Test
             var possibleguesses = topAssociations.Concat(maximums);
             var final = possibleguesses.Where(g => g.Strength > 0).First();
 
-            Console.WriteLine("XXXXXXXXXXXX" + final.Clue, final.Count);
             return new MI.NewWord(final.Clue, final.Count);
         }
 

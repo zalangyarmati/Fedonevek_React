@@ -7,6 +7,12 @@
     padding: 10px 10px 10px 10px;
     cursor: pointer;
     text-align: center;
+
+    /* background: url(../images/old-parchment.jpg); */
+}
+
+.centered {
+    align-items: center;
 }
 
 .card:hover {
@@ -51,6 +57,11 @@
     height: 50px;
 }
 
+.cloud {
+    position: absolute;
+    left: 150px;
+    top: 30px;
+}
 
 /*
 .btn {

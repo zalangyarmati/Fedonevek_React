@@ -106,6 +106,7 @@ namespace Fedonevek_React.Controllers
             var changed = repository.ChangeTurn(value.RoomID);
             var modified = repository.NewWord(value);
             await _gameHub.Clients.All.SendAsync("newWord", modified.CurrentWord, modified.CurrentNumber);
+            CheckPlayerRobotTurn(modified);
             return Ok(modified);
         }
 
@@ -113,25 +114,26 @@ namespace Fedonevek_React.Controllers
         public async Task<ActionResult<Room>> Pass(int id)
         {
             var modified = repository.Pass(id);
-            
-            if (repository.CheckRobotTurn(id))
-            {
-                MI.NewWord minw = new MI.NewWord();
-                if (!modified.BluesTurn)
-                {
-                    minw = repository.BlueSpyGenerate(id);
-                }
-                else 
-                {
-                    minw = repository.RedSpyGenerate(id);        
-                }
-                NewWord nw = new NewWord(id, minw.Word, minw.Number);
-                NewWord(nw);
-            }
-            else
-            {
-                await _gameHub.Clients.All.SendAsync("reveal", id, modified.BlueScore, modified.RedScore, modified.CurrentNumber, modified.Finished);
-            }      
+            await _gameHub.Clients.All.SendAsync("reveal", id, modified.BlueScore, modified.RedScore, modified.CurrentNumber, modified.Finished);
+            CheckSpyRobotTurn(modified);
+            // if (repository.CheckRobotTurn(id))
+            // {
+            //     MI.NewWord minw = new MI.NewWord();
+            //     if (!modified.BluesTurn)
+            //     {
+            //         minw = repository.BlueSpyGenerate(id);
+            //     }
+            //     else 
+            //     {
+            //         minw = repository.RedSpyGenerate(id);        
+            //     }
+            //     NewWord nw = new NewWord(id, minw.Word, minw.Number);
+            //     NewWord(nw);
+            // }
+            // else
+            // {
+            //     await _gameHub.Clients.All.SendAsync("reveal", id, modified.BlueScore, modified.RedScore, modified.CurrentNumber, modified.Finished);
+            // }      
             return Ok(modified);
         }
 
@@ -141,20 +143,8 @@ namespace Fedonevek_React.Controllers
         {
             var modified = repository.RevealOne(id);
             await _gameHub.Clients.All.SendAsync("reveal", id, modified.BlueScore, modified.RedScore, modified.CurrentNumber, modified.Finished);
-            if (repository.CheckRobotTurn(modified.ID))
-            {
-                MI.NewWord minw = new MI.NewWord();
-                if (!modified.BluesTurn)
-                {
-                    minw = repository.BlueSpyGenerate(modified.ID);
-                }
-                else 
-                {
-                    minw = repository.RedSpyGenerate(modified.ID);        
-                }
-                NewWord nw = new NewWord(modified.ID, minw.Word, minw.Number);
-                NewWord(nw);
-            }
+            CheckSpyRobotTurn(modified);
+            CheckPlayerRobotTurn(modified);
             return Ok(modified);
         }
 
@@ -169,10 +159,36 @@ namespace Fedonevek_React.Controllers
         public async Task<ActionResult<Room>> Start(int id)
         {
             var modified = repository.Start(id);
-            await _gameHub.Clients.All.SendAsync("start");
+            await _gameHub.Clients.All.SendAsync("start", modified);
+            CheckSpyRobotTurn(modified);
             return Ok(modified);
         }
 
+
+        public void CheckSpyRobotTurn(Room room){
+            if (repository.IsSpyRobotNext(room.ID))
+            {
+                MI.NewWord minw = new MI.NewWord();
+                if (!room.BluesTurn)
+                {
+                    minw = repository.BlueSpyGenerate(room.ID);
+                }
+                else 
+                {
+                    minw = repository.RedSpyGenerate(room.ID);        
+                }
+                NewWord nw = new NewWord(room.ID, minw.Word, minw.Number);
+                NewWord(nw);
+            }
+        }
+
+        public void CheckPlayerRobotTurn(Room room){
+            if (repository.IsPlayerRobotNext(room.ID))
+            {
+                int id = repository.PlayerRobotGuess(room.ID).Value;
+                RevealAsync(id);
+            }
+        }
 
     }
 }
