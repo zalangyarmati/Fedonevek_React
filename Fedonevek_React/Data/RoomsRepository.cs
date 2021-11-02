@@ -194,7 +194,7 @@ namespace Fedonevek_React.Data
         }
 
         //ezután*******************************
-        public Room RevealOne(int cardId)
+        public Room RevealOne(int? cardId)
         {
             var dbCard = db.Cards.FirstOrDefault(c => c.ID == cardId);
 
@@ -404,20 +404,38 @@ namespace Fedonevek_React.Data
                 words.Add(c.Word);
             }
             List<MI.Association> list = MI_Test.Program.Guess(words, dbRoom.CurrentWord, dbRoom.CurrentNumber);
+            
             if (list.Count() == 0)
             {
                 return null;
             }
             else
             {
+                
+                List<int> cardIdList = new List<int>();
+
                 int id = 0;
                 var tipp = list.First();
                 foreach(Card c in cards){
                     if (c.Word == tipp.Card){
                         id = c.ID;
+                        //cardIdList.Add(c.ID);
                     }
                 }
+
                 return id;
+                // foreach(MI.Association a in list)
+                // {
+                //     foreach(Card c in cards) 
+                //     {
+                //         if (c.Word == a.Card) 
+                //         {
+                //             cardIdList.Add(c.ID);
+                //         }
+                //     }
+                // }
+
+                // return cardIdList;
             }
         }
 

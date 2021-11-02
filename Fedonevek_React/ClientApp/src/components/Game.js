@@ -80,7 +80,7 @@ export class Game extends Component {
                     await this.delay(5000);
                     this.setState({bluePlayerThinking: false});
                 }
-                if(!roomcopy.bluesTurn && roomcopy.redPlayerRobot){
+                else if(!roomcopy.bluesTurn && roomcopy.redPlayerRobot){
                     this.setState({redPlayerThinking: true});
                     await this.delay(5000);
                     this.setState({redPlayerThinking: false});

@@ -11,7 +11,7 @@ namespace Fedonevek_React.Data
         Room Create(CreateRoom value);
         Room NewWord(NewWord value);
         Room Pass(int roomid);
-        Room RevealOne(int cardId);
+        Room RevealOne(int? cardId);
         Room ChangeTurn(int id);
         Room Start(int id);
         IReadOnlyCollection<Card> GetCards(int id);

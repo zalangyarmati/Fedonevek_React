@@ -91,8 +91,8 @@ export class Chat extends Component {
                         < Emojis handleClick={this.emojiClicked} />
                     </div>
                 }
-                <div class="chatbox" ref="chatBox">{this.state.messages.map((m) => <div>{m}</div>)}</div>
-                <div class="d-flex">
+                <div class="chatbox bg-parchment" ref="chatBox">{this.state.messages.map((m) => <div>{m}</div>)}</div>
+                <div class="d-flex w-b">
                     <div class="d-flex justify-content-center" onClick={this.setPicker} >&#128526;</div>
                     <input class="flex-grow-1" type="text" ref="newMessage" />
                     <button onClick={this.messageSend}>Küldés</button>

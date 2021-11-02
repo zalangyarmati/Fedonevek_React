@@ -139,7 +139,7 @@ namespace Fedonevek_React.Controllers
 
 
         [HttpPost("{id}/reveal")]
-        public async Task<ActionResult<Room>> RevealAsync(int id)
+        public async Task<ActionResult<Room>> RevealAsync(int? id)
         {
             var modified = repository.RevealOne(id);
             await _gameHub.Clients.All.SendAsync("reveal", id, modified.BlueScore, modified.RedScore, modified.CurrentNumber, modified.Finished);
@@ -185,8 +185,31 @@ namespace Fedonevek_React.Controllers
         public void CheckPlayerRobotTurn(Room room){
             if (repository.IsPlayerRobotNext(room.ID))
             {
-                int id = repository.PlayerRobotGuess(room.ID).Value;
-                RevealAsync(id);
+                int? id = repository.PlayerRobotGuess(room.ID);
+                if (id != null)
+                {
+                    RevealAsync(id);
+                }
+                else
+                {
+                    Pass(room.ID);
+                }
+
+                // List<int> idl = new List<int>();
+                // idl = repository.PlayerRobotGuess(room.ID);
+                // //  if (idl == null){
+                // //      Pass(room.ID);
+                // //  }
+                // int a = 4;
+                //  if (idl.Count != 0)
+                //  {
+                //      RevealAsync(idl[0]);
+                //  }
+                //  else
+                //  {
+                //      Pass(room.ID);
+                //  }
+               // var ids = repository.PlayerRobotGuess(room.ID);
             }
         }
 

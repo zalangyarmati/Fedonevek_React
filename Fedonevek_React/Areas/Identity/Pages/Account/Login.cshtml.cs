@@ -42,15 +42,15 @@ namespace Fedonevek_React.Areas.Identity.Pages.Account
         {
             [Required]
             [DataType(DataType.Text)]
-            [Display(Name = "Felhasznalonev:")]
+            [Display(Name = "Felhasználonév:")]
             public string Email { get; set; }
 
             [Required]
             [DataType(DataType.Password)]
-            [Display(Name = "Jelszo:")]
+            [Display(Name = "Jelszó:")]
             public string Password { get; set; }
 
-            [Display(Name = "Emlekezz ram!")]
+            [Display(Name = "Emlékezz rám!")]
             public bool RememberMe { get; set; }
         }
 

@@ -63,7 +63,51 @@
     top: 30px;
 }
 
-/*
-.btn {
-    word-break: break-all;
-}*/
+.chatbox {
+    background-color: white;
+}
+
+.w-b {
+    background-color: white;
+}
+
+.link {
+    color: black;
+}
+
+.link:hover {
+   color: black;
+}
+
+.bg-secret {
+    background: url(img/secret.jpg);
+}
+
+.bg-parchment {
+    background: url(img/parchment.jpg);
+    background-size: cover;
+    outline: black;
+}
+
+.bg-input
+{
+    background: transparent;
+    border-style: solid;
+
+}
+
+.vert {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.rel {
+    position: relative;
+}
+
+.border {
+    border-color: black;
+}

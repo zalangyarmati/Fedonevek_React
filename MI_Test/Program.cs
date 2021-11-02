@@ -379,12 +379,15 @@ namespace MI_Test
 
 
             var clueStimulus = DataSet.Stimuli.Where(s => s.Word == clueWord.ToUpper()).FirstOrDefault();
-            foreach (MI.Target t in clueStimulus.Targets)
+            if (clueStimulus != null)
             {
-
-                if (cards.Contains(t.Word) && !guesses.Contains(t.Word))
+                foreach (MI.Target t in clueStimulus.Targets)
                 {
-                    associations.Add(new MI.Association(clueWord, t.Word, t.Fsg));
+
+                    if (cards.Contains(t.Word) && !guesses.Contains(t.Word))
+                    {
+                        associations.Add(new MI.Association(clueWord, t.Word, t.Fsg));
+                    }
                 }
             }
 

@@ -13,13 +13,13 @@ export class Button extends Component {
     render() {
         var wordLength = this.props.card.word.length
         let textsize
-        if (wordLength > 10) {
+        if (wordLength > 7) {
             textsize = "8px";
         }
-        else if (wordLength > 9) {
+        else if (wordLength > 5) {
             textsize = "10px";
         }
-        else if (wordLength > 6) {
+        else if (wordLength > 4) {
             textsize = "12px";
         }
         else {
@@ -40,7 +40,7 @@ export class Button extends Component {
             color = "#000000";
         }
         return (
-            <Card class="btn card d-flex justify-content-center" style={{ backgroundColor: color, fontSize: textsize }} onClick={() => this.props.handleClick(this.props.card.id)}>
+            <Card class="btn card rel d-flex justify-content-center" style={{ backgroundColor: color, fontSize: textsize }} onClick={() => this.props.handleClick(this.props.card.id)}>
                 {this.props.card.word}
             </Card>)
     }

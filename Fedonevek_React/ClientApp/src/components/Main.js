@@ -3,7 +3,10 @@ import { Link } from 'react-router-dom';
 import './Styles.css';
 import { HubConnectionBuilder, LogLevel } from '@aspnet/signalr';
 import authService from './api-authorization/AuthorizeService';
-
+import { HighScores } from './HighScores';
+import { Friends } from './Friends';
+import { Rooms } from './Rooms';
+import { Start } from './Start';
 
 export class Main extends Component {
     static displayName = Main.name;
@@ -86,85 +89,10 @@ export class Main extends Component {
         return (
             <div class="container">
                 <div class="row">
-
-                    <div class="col-sm-3  pb-3">
-                        <div class="card card-block card-fill">
-                            <div class="card-header bg-transparent col d-flex justify-content-center">
-                                <h4>Ranglista</h4>
-                            </div>
-                            <div class="card-body">
-                                {this.state.users.map(function (item, index) {
-                                    if (index == 0) return <div class="mt-2 d-flex justify-content-center text-white p-2" style={{ borderRadius: '12px', backgroundColor: '#ffd700' }}>
-                                                {item.userName} <br/>{item.point} p
-                                           </div>
-                                    if (index == 1) return <div class="mt-2 d-flex justify-content-center text-white p-2" style={{ borderRadius: '12px', backgroundColor: '#C0C0C0' }}>
-                                        {item.userName} <br />{item.point} p
-                                           </div>
-                                    if (index == 2) return <div class="mt-2 d-flex justify-content-center text-white p-2" style={{ borderRadius: '12px', backgroundColor: '#cd7f32' }}>
-                                        {item.userName} <br />{item.point} p
-                                           </div>
-                                    if (index > 2) return <div class="bg-secondary mt-2 d-flex justify-content-center text-white p-2" style={{ borderRadius: '12px' }}>
-                                        {item.userName} <br />{item.point} p
-                                           </div>
-                                })}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col">
-                        <div class="card">
-                            <div class="card-header bg-transparent col d-flex justify-content-center">
-                                <h4>Szobak</h4>
-                            </div>
-                            <div class="card-body">
-                                {
-                                    this.state.rooms.map(function (item) {
-                                        if (!item.finished) {
-                                            if (item.started == true && b)
-                                                return <Link to={`/game/${item.id}`}>
-                                                    <div class="bg-success mt-2 d-flex justify-content-center text-white p-2" style={{ borderRadius: '12px' }}>
-                                                        <span style={{ marginLeft: "auto" }}>{item.name}</span>
-                                                        <span style={{ marginLeft: "auto" }}>&#128308;</span>
-                                                    </div>
-                                                </Link>
-                                            else
-                                                return <Link to={`/game/${item.id}`}>
-                                                    <div class="bg-success mt-2 d-flex justify-content-center text-white p-2" style= {{borderRadius: '12px'}}>
-                                                        <span >{item.name}</span>
-                                                    </div>
-                                                </Link>
-                                        }
-                                        else {
-                                            return 
-                                        }
-
-                                })}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-3 pb-3">
-                        <div class="card">
-                            <div class="card-header bg-transparent col d-flex justify-content-center">
-                                <h4>Baratok</h4>
-                            </div>
-                            <div class="card-body">
-                                {this.state.friends.map(function (item) {
-                                    return <div class="mt-2 d-flex justify-content-center text-white p-2 bg-info" style={{ borderRadius: '12px', backgroundColor: '#99ffcc' }}>
-                                            {item.userName} 
-                                           </div>
-                                })}
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div>
-                    <Link to="/room" style={{ textDecoration: 'none' }}>
-                        <div class="mt-3 col-sm-12">
-                            <button type="button" class="btn btn-block btn-outline-success">Jatek</button>
-                        </div>
-                    </Link>
+                    <Rooms alignment={'left'} rooms={this.state.rooms} />
+                    <HighScores alignment={'right'} users={this.state.users} />
+                    <Friends alignment={'left'} friends={this.state.friends} />
+                    <Start alignment={'right'} />
                 </div>
             </div>
         );

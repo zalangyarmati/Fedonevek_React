@@ -13,8 +13,21 @@ code {
   border-color: #1861ac;
 }
 
-/* body {
-  background: url(images/codenames_game_main.jpg);
-  height: auto;
-  background-size: cover; 
-} */
+body {
+  background: url(images/spy.jpg);
+  background-size: cover;
+  background-attachment: fixed;
+  width: 100vw;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.example {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
