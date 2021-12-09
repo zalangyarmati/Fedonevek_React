@@ -66,7 +66,6 @@ export class Main extends Component {
     }
 
     getTopList() {
-        console.log("list got");
         fetch('https://localhost:5001/api/users')
             .then(response => response.json())
             .then(response => this.setState({ users: response }))

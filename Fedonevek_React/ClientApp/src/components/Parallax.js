@@ -36,6 +36,3 @@ export const CardContent = styled.div`
         border: 2px solid white;
     }
 `;
-
-
-// background: url(${({ img }) => `img/${img}`});

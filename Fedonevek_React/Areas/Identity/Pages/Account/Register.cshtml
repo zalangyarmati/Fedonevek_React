@@ -34,8 +34,14 @@
         word-wrap: break-word !important;
     }
 
+    .body {
+        background: url(images/spy.jpg);
+        background-size: cover;
+        background-attachment: fixed;
+        width: 100vw;
+    }
 </style>
-<div class="col d-flex justify-content-center">
+<div class="body col d-flex justify-content-center">
     <div class="card">
         <h1 class="col-sm-12">@ViewData["Title"]</h1>
         <form asp-route-returnUrl="@Model.ReturnUrl" method="post">

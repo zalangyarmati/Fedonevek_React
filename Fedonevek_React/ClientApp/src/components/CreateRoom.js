@@ -1,7 +1,6 @@
 ﻿import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import './Styles.css';
-import img from './img/secret.jpg';
 
 export class CreateRoom extends Component {
     static displayName = CreateRoom.name;

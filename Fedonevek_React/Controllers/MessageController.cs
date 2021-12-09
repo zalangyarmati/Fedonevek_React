@@ -20,7 +20,7 @@ namespace Fedonevek_React.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(MessagePost messagePost)
         {
-            await _messageHub.Clients.All.SendAsync("sendToAll", messagePost.Sender + ": " + messagePost.Message);
+            await _messageHub.Clients.All.SendAsync("sendToAll", messagePost.Sender + ": " + messagePost.Message, messagePost.RoomID);
             return Ok();
         }
     }

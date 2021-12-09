@@ -22,7 +22,6 @@ namespace MI
             Count = _count;
             Strength = _strength;
             Cards = new List<string>() { _card };
-            //Cards.Append(_card);
         }
         public string Clue { get; set; }
         public int Count { get; set; }

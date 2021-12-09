@@ -7,6 +7,7 @@ namespace MI_Test
 {
     public class Program
     {
+        public static int baseFrequency = 100;
         static void Main(string[] args)
         {
             while (true)
@@ -15,7 +16,6 @@ namespace MI_Test
                 Console.ReadKey();
                 Console.Clear();
             }
-
         }
 
         public static List<string> getWordList(string route){
@@ -23,7 +23,7 @@ namespace MI_Test
             var DataSet = DeserializeToObject<MI.DataSet>(route);
             foreach (MI.Stimulus s in DataSet.Stimuli)
             {
-                if (s.Frequency > 90)
+                if (s.Frequency > baseFrequency)
                 {
                     WordList.Words.Add(s.Word);
                 }
@@ -42,7 +42,7 @@ namespace MI_Test
                     WordList.Words.Add(s.Word);
                 }
             }
-
+            Console.WriteLine("Szam: " + WordList.Words.Count);
             IEnumerable<string> randomized = WordList.Words.OrderBy(x => rnd.Next()).Take(8);
             IEnumerable<string> table = new List<string>(randomized);
 
@@ -107,18 +107,10 @@ namespace MI_Test
                     szum += grp.Count();
                     Console.Write(" " + grp.Count() + " ");
                 }
-                //Console.WriteLine("{0} {1}", grp.Key, grp.Count());
             }
             Console.WriteLine("SUM: " + szum);
             return szum;
         }
-
-
-
-
-
-
-
 
         public static T DeserializeToObject<T>(string filepath) where T : class
         {
@@ -129,9 +121,6 @@ namespace MI_Test
                 return (T)ser.Deserialize(sr);
             }
         }
-
-
-
 
         static void Concrete(int cardsCount)
         {
@@ -338,12 +327,6 @@ namespace MI_Test
                 .ThenByDescending(g => g.Strength);
 
             var topBadAssociations = badGrouped.Take(10);
-            //foreach (var grp in topBadAssociations)
-            //{
-            //    Console.WriteLine("{0} {1} {2}", grp.Clue, grp.Count, grp.Strength);
-            //}
-
-            //Console.WriteLine("-------------------------------");
 
             List<MI.Association> SortedList = associations.OrderBy(a => a.Clue).ToList();
             foreach (MI.Association a in SortedList)
@@ -377,20 +360,17 @@ namespace MI_Test
                 guesses.Add(a.Card);
             }
 
-
             var clueStimulus = DataSet.Stimuli.Where(s => s.Word == clueWord.ToUpper()).FirstOrDefault();
             if (clueStimulus != null)
             {
                 foreach (MI.Target t in clueStimulus.Targets)
                 {
-
                     if (cards.Contains(t.Word) && !guesses.Contains(t.Word))
                     {
                         associations.Add(new MI.Association(clueWord, t.Word, t.Fsg));
                     }
                 }
             }
-
             return associations.OrderByDescending(a => a.Strength).Take(count).ToList();
         }
 
@@ -402,11 +382,9 @@ namespace MI_Test
             }
             var DataSet = DeserializeToObject<MI.DataSet>("dataset.xml");
 
-
             IEnumerable<string> cards = blueCards.Concat(redCards);
             List<MI.Association> associations = new List<MI.Association>();
             List<MI.Association> badAssociations = new List<MI.Association>();
-
 
             foreach (MI.Stimulus s in DataSet.Stimuli)
             {
@@ -508,7 +486,6 @@ namespace MI_Test
                 .OrderByDescending(g => g.Count)
                 .ThenByDescending(g => g.Strength);
 
-
             var maximums = associations
                     .GroupBy(a => a.Card)
                     .Select(grp => new MI.AssociationGroup(
@@ -546,9 +523,5 @@ namespace MI_Test
 
             return new MI.NewWord(final.Clue, final.Count);
         }
-
-
-
-
     }
 }

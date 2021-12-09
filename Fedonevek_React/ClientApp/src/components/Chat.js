@@ -38,11 +38,13 @@ export class Chat extends Component {
                 .start()
                 .then(() => console.log('Connection started!'))
                 .catch(err => console.log('Error while establishing connection :('));
-            this.state.hubConnection.on('sendToAll', (receivedMessage) => {
-                const text = ` ${receivedMessage}`;
-                this.setState({ message: text })
-                const messages = this.state.messages.concat([text]);
-                this.setState({ messages });
+            this.state.hubConnection.on('sendToAll', (receivedMessage, roomID) => {
+                if (this.props.id == roomID) {
+                    const text = ` ${receivedMessage}`;
+                    this.setState({ message: text })
+                    const messages = this.state.messages.concat([text]);
+                    this.setState({ messages });
+                }
             });
         });
     }
@@ -58,6 +60,7 @@ export class Chat extends Component {
 
     messageSend = () => {
         let msg = {
+            RoomID: this.props.id,
             Message: this.refs.newMessage.value,
             Sender: this.state.username
         };
@@ -97,8 +100,6 @@ export class Chat extends Component {
                     <input class="flex-grow-1" type="text" ref="newMessage" />
                     <button onClick={this.messageSend}>Küldés</button>
                 </div>
-
-
             </div>
         );
     }

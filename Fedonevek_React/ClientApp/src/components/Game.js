@@ -70,65 +70,69 @@ export class Game extends Component {
                 .then(() => console.log('GameHub Connection started!'))
                 .catch(err => console.log('Error while establishing connection :('));
 
-            this.state.hubConnection.on('reveal', async (cardId, bluepoint, redpoint, current, finished) => {
-                const id = cardId;
+            this.state.hubConnection.on('reveal', async (roomid, cardId, bluepoint, redpoint, current, finished) => {
+                if (this.state.room.id == roomid) {
+                    const id = cardId;
 
-                let roomcopy = this.state.room;
-                
-                if(roomcopy.bluesTurn && roomcopy.bluePlayerRobot){
-                    this.setState({bluePlayerThinking: true});
-                    await this.delay(5000);
-                    this.setState({bluePlayerThinking: false});
-                }
-                else if(!roomcopy.bluesTurn && roomcopy.redPlayerRobot){
-                    this.setState({redPlayerThinking: true});
-                    await this.delay(5000);
-                    this.setState({redPlayerThinking: false});
-                }
+                    let roomcopy = this.state.room;
 
-                let cardscopy = this.state.cards;
-                cardscopy.map((item) => {
-                    if (item.id == id) {
-                        roomcopy.blueScore = bluepoint;
-                        roomcopy.redScore = redpoint;
-                        item.revealed = true;
+                    if (roomcopy.bluesTurn && roomcopy.bluePlayerRobot) {
+                        this.setState({ bluePlayerThinking: true });
+                        await this.delay(5000);
+                        this.setState({ bluePlayerThinking: false });
                     }
-                })
-                roomcopy.finished = finished
-                roomcopy.currentNumber = current;
-                this.setState({ cards: cardscopy, room: roomcopy })
-                if (finished) {
+                    else if (!roomcopy.bluesTurn && roomcopy.redPlayerRobot) {
+                        this.setState({ redPlayerThinking: true });
+                        await this.delay(5000);
+                        this.setState({ redPlayerThinking: false });
+                    }
+
+                    let cardscopy = this.state.cards;
                     cardscopy.map((item) => {
-                        item.revealed = true;
+                        if (item.id == id) {
+                            roomcopy.blueScore = bluepoint;
+                            roomcopy.redScore = redpoint;
+                            item.revealed = true;
+                        }
                     })
-                    this.fireworks();
+                    roomcopy.finished = finished
+                    roomcopy.currentNumber = current;
+                    this.setState({ cards: cardscopy, room: roomcopy })
+                    if (finished) {
+                        cardscopy.map((item) => {
+                            item.revealed = true;
+                        })
+                        this.fireworks();
+                    }
                 }
-
-
             });
             this.state.hubConnection.on('changeside', async () => {
                 this.getPlayers(id);
             });
             this.state.hubConnection.on('start', (mod_room) => {
-                this.setState({ room: mod_room })
+                if (mod_room.id == this.state.room.id) {
+                    this.setState({ room: mod_room })
+                }
             });
-            this.state.hubConnection.on('newWord', async (word, number) => {
-                let roomcopy = this.state.room;
-                
-                if(!roomcopy.bluesTurn && roomcopy.blueSpyRobot){
-                    this.setState({blueSpyThinking: true});
-                    await this.delay(5000);
-                    this.setState({blueSpyThinking: false});
+            this.state.hubConnection.on('newWord', async (id, word, number) => {
+                if (this.state.room.id == id) {
+                    let roomcopy = this.state.room;
+
+                    if (!roomcopy.bluesTurn && roomcopy.blueSpyRobot) {
+                        this.setState({ blueSpyThinking: true });
+                        await this.delay(5000);
+                        this.setState({ blueSpyThinking: false });
+                    }
+                    if (roomcopy.bluesTurn && roomcopy.redSpyRobot) {
+                        this.setState({ redSpyThinking: true });
+                        await this.delay(5000);
+                        this.setState({ redSpyThinking: false });
+                    }
+                    roomcopy.currentWord = word;
+                    roomcopy.currentNumber = number;
+                    roomcopy.bluesTurn = !roomcopy.bluesTurn;
+                    this.setState({ room: roomcopy })
                 }
-                if(roomcopy.bluesTurn && roomcopy.redSpyRobot){
-                    this.setState({redSpyThinking: true});
-                    await this.delay(5000);
-                    this.setState({redSpyThinking: false});
-                }
-                roomcopy.currentWord = word;
-                roomcopy.currentNumber = number;
-                roomcopy.bluesTurn = !roomcopy.bluesTurn;
-                this.setState({ room: roomcopy })
             });
             this.state.hubConnection.on('robotside', (side, roomid, userid) =>{
                 if (this.state.room.id == roomid && this.state.userid != userid){
@@ -225,7 +229,7 @@ export class Game extends Component {
 
         if (hasRed && hasBlue && hasRedspy && hasBluespy) {
             var roomid = this.state.room.id;
-            fetch(`https://localhost:5001/api/rooms/${roomid}/start`, {
+            fetch(`${this.state.url}${roomid}/start`, {
                 method: 'POST'
             });
         }
@@ -238,9 +242,6 @@ export class Game extends Component {
         copy.isBlue = side;
         copy.isSpy = spy;
         this.setState({ side: copy })
-        console.log(this.state.side.isBlue)
-        console.log(this.state.side.isSpy)
-        console.log(this.state.players)
 
         fetch(`https://localhost:5001/api/rooms/side/${roomid}/${userid}`, {
             method: 'POST',
@@ -254,7 +255,6 @@ export class Game extends Component {
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
 
-        console.log(this.state.name)
         await this.setState({
             [name]: value
         });
@@ -287,11 +287,8 @@ export class Game extends Component {
         fetch(`https://localhost:5001/api/rooms/side/robot/${roomid}/${this.state.userid}`, {
             method: 'POST',
             headers: { 'Content-type': 'application/json' },
-            //body: JSON.stringify(this.state.robotSide)
             body: JSON.stringify(this.state.robotSide)
         });
-
-        console.log(`robot clicked${this.state.redSpyRobot}`);
     }
 
     cardClicked(id) {
@@ -420,11 +417,9 @@ export class Game extends Component {
         fetch(`https://localhost:5001/api/users/friends/new/${id}/${this.state.userid}`, {
             method: 'POST'
         })
-        console.log(`modal ok ${id}`);
     }
     modalCancel = () => {
         this.setState({ show: false })
-        console.log("modal cancel");
     }
 
     render() {
@@ -567,7 +562,7 @@ export class Game extends Component {
                             }
                         </div>
                         <div class="col-6">
-                            <Chat />
+                            <Chat id={this.state.room.id}/>
                         </div>
                         <div>
                             <h1>{string}</h1>

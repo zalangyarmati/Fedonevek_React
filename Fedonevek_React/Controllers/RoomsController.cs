@@ -105,7 +105,7 @@ namespace Fedonevek_React.Controllers
         {
             var changed = repository.ChangeTurn(value.RoomID);
             var modified = repository.NewWord(value);
-            await _gameHub.Clients.All.SendAsync("newWord", modified.CurrentWord, modified.CurrentNumber);
+            await _gameHub.Clients.All.SendAsync("newWord", changed.ID, modified.CurrentWord, modified.CurrentNumber);
             CheckPlayerRobotTurn(modified);
             return Ok(modified);
         }
@@ -114,26 +114,8 @@ namespace Fedonevek_React.Controllers
         public async Task<ActionResult<Room>> Pass(int id)
         {
             var modified = repository.Pass(id);
-            await _gameHub.Clients.All.SendAsync("reveal", id, modified.BlueScore, modified.RedScore, modified.CurrentNumber, modified.Finished);
-            CheckSpyRobotTurn(modified);
-            // if (repository.CheckRobotTurn(id))
-            // {
-            //     MI.NewWord minw = new MI.NewWord();
-            //     if (!modified.BluesTurn)
-            //     {
-            //         minw = repository.BlueSpyGenerate(id);
-            //     }
-            //     else 
-            //     {
-            //         minw = repository.RedSpyGenerate(id);        
-            //     }
-            //     NewWord nw = new NewWord(id, minw.Word, minw.Number);
-            //     NewWord(nw);
-            // }
-            // else
-            // {
-            //     await _gameHub.Clients.All.SendAsync("reveal", id, modified.BlueScore, modified.RedScore, modified.CurrentNumber, modified.Finished);
-            // }      
+            await _gameHub.Clients.All.SendAsync("reveal", modified.ID, id, modified.BlueScore, modified.RedScore, modified.CurrentNumber, modified.Finished);
+            CheckSpyRobotTurn(modified);   
             return Ok(modified);
         }
 
@@ -142,7 +124,7 @@ namespace Fedonevek_React.Controllers
         public async Task<ActionResult<Room>> RevealAsync(int? id)
         {
             var modified = repository.RevealOne(id);
-            await _gameHub.Clients.All.SendAsync("reveal", id, modified.BlueScore, modified.RedScore, modified.CurrentNumber, modified.Finished);
+            await _gameHub.Clients.All.SendAsync("reveal", modified.ID, id, modified.BlueScore, modified.RedScore, modified.CurrentNumber, modified.Finished);
             CheckSpyRobotTurn(modified);
             CheckPlayerRobotTurn(modified);
             return Ok(modified);
@@ -194,22 +176,6 @@ namespace Fedonevek_React.Controllers
                 {
                     Pass(room.ID);
                 }
-
-                // List<int> idl = new List<int>();
-                // idl = repository.PlayerRobotGuess(room.ID);
-                // //  if (idl == null){
-                // //      Pass(room.ID);
-                // //  }
-                // int a = 4;
-                //  if (idl.Count != 0)
-                //  {
-                //      RevealAsync(idl[0]);
-                //  }
-                //  else
-                //  {
-                //      Pass(room.ID);
-                //  }
-               // var ids = repository.PlayerRobotGuess(room.ID);
             }
         }
 

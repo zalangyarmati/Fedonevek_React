@@ -61,10 +61,10 @@ namespace Fedonevek_React.Data
             db.Rooms.Add(newRecord);
             db.SaveChanges();
 
-            //********************
+            
             var wordList = MI_Test.Program.getWordList("dataset.xml");
             var elso = wordList[0];
-            //var wordList = db.Words.Select(ToWord).ToList();
+            
 
             var rand = new Random();
             List<int> intList = new List<int>();
@@ -153,7 +153,7 @@ namespace Fedonevek_React.Data
             }
         }
 
-        //ezután*******************************
+        
         public Room Pass(int roomid)
         {
             var dbRoom = db.Rooms.FirstOrDefault(r => r.ID == roomid);
@@ -193,7 +193,7 @@ namespace Fedonevek_React.Data
             db.SaveChanges();
         }
 
-        //ezután*******************************
+        
         public Room RevealOne(int? cardId)
         {
             var dbCard = db.Cards.FirstOrDefault(c => c.ID == cardId);
@@ -418,24 +418,11 @@ namespace Fedonevek_React.Data
                 var tipp = list.First();
                 foreach(Card c in cards){
                     if (c.Word == tipp.Card){
-                        id = c.ID;
-                        //cardIdList.Add(c.ID);
+                        id = c.ID;                      
                     }
                 }
 
                 return id;
-                // foreach(MI.Association a in list)
-                // {
-                //     foreach(Card c in cards) 
-                //     {
-                //         if (c.Word == a.Card) 
-                //         {
-                //             cardIdList.Add(c.ID);
-                //         }
-                //     }
-                // }
-
-                // return cardIdList;
             }
         }
 
